@@ -1,6 +1,6 @@
 String _chromosome, _sequence;
 int _cLength;
-int _start, _end, _long, _i;  //left first x and it index in _sequence
+int _start, _end, _long;  //left first x and it index in _sequence
 int _PIXLEN;//each ATCG pixels length
 int _show; //show how many seq
 int _MINLEN=100; //the least _show number
@@ -8,6 +8,8 @@ int _MINLEN=100; //the least _show number
 
 boolean flag=true, flag1=true;
 int px;
+
+boolean notTraceChange=false;
 
 void setup()
 {
@@ -33,14 +35,22 @@ void draw()
   if (_i<0 || (_i>_long-_show)) //if _i out of range
   {
       println(_i);
-      // if (_i<0) //left update
-      // {
-      //     int k = _i;
-      //     param2 = (int)(param2 + k);
-      //     param3 = (int)(param3 + k);
-      //     theAdd=true;
-      //     update();
-      // }
+      notTraceChange=true;
+      have_offset=false;
+      if (_i<0) //left update
+      {
+          param2 = (int)((int)param2 + (int)_i);
+          param3 = (int)((int)param3 + (int)_i);
+          theAdd=true;
+          update();
+      }
+      else
+      {
+          param2 = (int)((int)param2 + (int)_i);
+          param3 = (int)((int)param3 + (int)_i);
+          theAdd=true;
+          update();
+      }
     
       
   }
@@ -57,6 +67,7 @@ void draw()
 
 void myupdate()
 {
+  println('myupdate~~~~');
   _chromosome=theChromosome;
   _start=theStart;
   _end=theEnd;
@@ -66,11 +77,13 @@ void myupdate()
     _sequence=theSequence;
   }
   _cLength=theLength;
-  
+
   theFlag=false;
   //_show=500; //_show=1000, 500, 200, 100
   _i=0;
   if (have_offset){_i=(int)offset;}
+
+  notTraceChange = false;
   
     
 
@@ -92,6 +105,7 @@ void showI()
 //the move line
 void drawTraceLine()
 { 
+  if (notTraceChange) return;
   if ((100<mouseX && mouseX<1100) && (mouseY>0) && (mouseY<100))
   {
     if (mousePressed && flag)
@@ -121,6 +135,7 @@ void drawTraceLine()
 }
 void keyPressed()
 {
+  if (notTraceChange) return;
   //define keypresses up down right left
    if (key == CODED) {
     if (keyCode == RIGHT) {
@@ -175,6 +190,7 @@ void keyPressed()
 
 void mouseReleased()
 {
+  if(notTraceChange) return;
   _i = (int)(_i+(px-mouseX)/(int)(_PIXLEN));
   flag=true;
 }
@@ -182,6 +198,7 @@ void mouseReleased()
 
 void mouseWheel(MouseEvent event) 
 {
+  if (notTraceChange) return;
   float e = (int)event.getCount();
   _i+=e;
 }
@@ -195,7 +212,7 @@ void drawPart1()
 {
   stroke(0);
   strokeWeight(0.5);
-  fill(#00FF00); //color of part_1
+  fill(#FFEBCD); //color of part_1
   rect(0, 0, 1100, height/8); //part_1
   rect(0, 0, 100, height/8);
 
