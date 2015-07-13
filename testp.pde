@@ -1,6 +1,6 @@
 String _chromosome, _sequence;
 int _cLength;
-int _start, _end, _long, _XX, _i;  //left first x and it index in _sequence
+int _start, _end, _long, _i;  //left first x and it index in _sequence
 int _PIXLEN;//each ATCG pixels length
 int _show; //show how many seq
 int _MINLEN=100; //the least _show number
@@ -20,9 +20,8 @@ void setup()
   _end=50001000;
   _long=_end-_start; //have how mang seq
   _cLength=theLength;
-  _show=500; //_show=1000, 500, 200, 100
+  _show=1000; //_show=1000, 500, 200, 100
   _i=50;
-  _XX=_start+_i;
   _PIXLEN=1000/_show;
 }
 
@@ -30,64 +29,20 @@ void draw()
 {
   if (theFlag) {myupdate();}
   
-  //println(_i);
-
+  
   if (_i<0 || (_i>_long-_show)) //if _i out of range
   {
-    println(_i);
-    if (_i<0)
-    {
-      //println(111);
-      if (_start>50)
-      {
-        param2 = param2-51;
-        param3 = param3-51;
-        theAdd=true;
-        theFlag=true;
-        update();
-        return;
-      }
-      else if (_start>=0) {
-        param2=0;
-        param3=param3-_start;
-        _i=_start;
-        theAdd=true;
-        theFlag=true;
-        is_want_i_change=false;
-        update();
-        return;
-      }
-      else{
-        return;
-      }
-
-    }
-    else
-    {
-      if (_cLength-_end>50)
-      {
-        param2 = (int)(param2)+50;
-        param3 = (int)param3+(int)50;
-        theAdd=true;
-        update();
-        the_iChange=false;
-        theFlag=true;
-        return;
-      }
-      else if (_end<=_cLength) {//if seq upper no enough -> have bug
-        param2=(int)param2+int((int)_cLength-param3);
-        _i=_start+(int)_cLength-param3;
-        param3=_cLength;
-        theAdd=true;
-        theFlag=true;
-        is_want_i_change=false;
-        update();
-        return;
-      }
-      else{
-        return;
-      }
-    }
+      println(_i);
+      // if (_i<0) //left update
+      // {
+      //     int k = _i;
+      //     param2 = (int)(param2 + k);
+      //     param3 = (int)(param3 + k);
+      //     theAdd=true;
+      //     update();
+      // }
+    
+      
   }
 
 
@@ -103,20 +58,22 @@ void draw()
 void myupdate()
 {
   _chromosome=theChromosome;
-  _sequence=theSequence;
   _start=theStart;
   _end=theEnd;
-  _cLength=theLength;
   _long=_end-_start;
+  if (_long<=1200)
+  {
+    _sequence=theSequence;
+  }
+  _cLength=theLength;
+  
   theFlag=false;
   //_show=500; //_show=1000, 500, 200, 100
-  if (is_want_i_change){
-    if (the_iChange){_i=50; the_iChange=false;}
-    else {_i=0;}
-    is_want_i_change=true;
-  }
+  _i=0;
+  if (have_offset){_i=(int)offset;}
+  
+    
 
-  _XX=_start+_i;
   //_PIXLEN=1000/_show;
 }
 
@@ -151,14 +108,14 @@ void drawTraceLine()
       rect(mouseX, 10, 100, 15);
       fill(0);
       textSize(10);
-      text((int)((mouseX-100)/(int)(_PIXLEN)+_XX), mouseX+5, 22.5);
+      text((int)((mouseX-100)/(int)(_PIXLEN)+_i+_start), mouseX+5, 22.5);
     }
     else
     {
       rect(mouseX-100, 10, 100, 15);
       fill(0);
       textSize(10);
-      text((int)((mouseX-100)/(int)(_PIXLEN)+_XX), mouseX-100+5, 22.5);
+      text((int)((mouseX-100)/(int)(_PIXLEN)+_i+_start), mouseX-100+5, 22.5);
     }
   }
 }
@@ -168,11 +125,10 @@ void keyPressed()
    if (key == CODED) {
     if (keyCode == RIGHT) {
       _i = _i+1;
-      _XX = _start+_i;
     } else if (keyCode == LEFT) {
       _i = _i-1;
-      _XX = _start+_i;
     } else if(keyCode ==UP){
+      int k = _PIXLEN;
       switch(_show)
       {
           case 100:
@@ -190,8 +146,10 @@ void keyPressed()
            default:
             break;         
       }
+      _i = (int)(_i+(mouseX-100)*(1.0/k-1.0/_PIXLEN));
     }
     else if (keyCode==DOWN){
+      int k = _PIXLEN;
       switch(_show)
       {
           case 1000:
@@ -209,24 +167,30 @@ void keyPressed()
            default:
             break;         
       }
+      _i = (int)(_i+(mouseX-100)*(1.0/k-1.0/_PIXLEN));
     }
    }
 }
+
+
 void mouseReleased()
 {
-   _i = (int)(_i+(px-mouseX)/(int)(_PIXLEN));
-   _XX=_i+_start;
+  _i = (int)(_i+(px-mouseX)/(int)(_PIXLEN));
   flag=true;
 }
+
 
 void mouseWheel(MouseEvent event) 
 {
   float e = (int)event.getCount();
   _i+=e;
-  _XX = _i+_start;
 }
 
 
+
+
+
+//_i, _show, _PIXLEN
 void drawPart1()
 {
   stroke(0);
@@ -234,6 +198,8 @@ void drawPart1()
   fill(#00FF00); //color of part_1
   rect(0, 0, 1100, height/8); //part_1
   rect(0, 0, 100, height/8);
+
+
   if (_show==_MINLEN)//draw each atcg
   {
     int x=100, y=height/8/2-5, k=_PIXLEN, ii=_i;
@@ -287,7 +253,7 @@ void drawPart1()
           line(x, y-10, x, y);
           fill(0);
           textSize(10);
-          text(_XX+((x-100)/10), x+3, y);
+          text(_i+_start+((x-100)/10), x+3, y);
         }
         
         
@@ -307,14 +273,14 @@ void drawPart1()
               rect(x, y, k, k);
               fill(0);
               textSize(k);
-              text('A', x, y+9);
+              text('A', x+1, y+9);
               break;
             case 1:  
               fill(133,122,185);
               rect(x, y, k, k);
               fill(0);
               textSize(k);
-              text('T', x, y+9);
+              text('T', x+1, y+9);
               break;
              case 2:  
               fill(236,95,75);
@@ -383,14 +349,14 @@ void drawPart1()
           line(x, y-10-t, x, y-t);
           fill(0);
           textSize(10);
-          text(_XX+((x-100)/k), x+3, y-t);
+          text(_i+_start+((x-100)/k), x+3, y-t);
         }
         if (x%50==0 && x%100!=0)
         {
           line(x, y+k+t, x, y+10+k+t);
           fill(0);
           textSize(10);
-          text(_XX+((x-100)/k), x+3, y+k+t+10);
+          text(_i+_start+((x-100)/k), x+3, y+k+t+10);
         }
         
         

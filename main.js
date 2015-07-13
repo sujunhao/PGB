@@ -24,9 +24,11 @@ var param1, param2, param3;
 var data;
 var theChromosome, theStart, theEnd, theLength, theSequence;
 var theFlag=false; //if have new query
-var theAdd=false;
-var the_iChange=false; //if param2 have a offset -50  
+var theAdd=false; 
+var have_offset=false; //if param2 have a offset -50  
 var is_want_i_change=true;  
+
+var offset=50;
 
 
 update = function (){
@@ -35,16 +37,24 @@ update = function (){
         document.getElementById("p2").value = param2;
         document.getElementById("p3").value = param3;
         theAdd=false;
-       // the_iChange=false;
+         // the_iChange=false;
     }
     else
     {
         param1=document.getElementById("p1").value;
         param2=document.getElementById("p2").value;
-        if (param2>50) {param2-=50; the_iChange=true;}
-        else {the_iChange=false;}
+         if (param2>offset)
+        {
+            param2-=offset;
+            have_offset=true;
+        }
+        else
+        {
+            have_offset=false;
+        }
         param3=document.getElementById("p3").value;
     }
+   
     var querry="update";
     req.onreadystatechange = getReadyStateHandler;
     querry="action=update"+"&chr="+param1+"&start="+param2+"&end="+param3;
@@ -112,7 +122,7 @@ function getReadyStateHandler() {
 }
 
 
-
+window.onload = update;
 
 
 
