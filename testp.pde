@@ -5,8 +5,9 @@ int _PIXLEN;//each ATCG pixels length
 int _show; //show how many seq
 int _MINLEN=100; //the least _show number
 
+int _i = 10;
 
-boolean flag=true, flag1=true;
+boolean haveNoPx=true, flag1=true;
 int px;
 
 boolean notTraceChange=false;
@@ -36,11 +37,11 @@ void draw()
   if (theFlag) {myupdate();}
   
   
+  if (haveNoPx)
   if (_i<0 || (_i>_long-_show)) //if _i out of range
   {
       println(_i);
       notTraceChange=true;
-      have_offset=false;
       if (_i<0) //left update
       {
           param2 = (int)((int)param2 + (int)_i);
@@ -92,8 +93,6 @@ void myupdate()
   theFlag=false;
   //_show=500; //_show=1000, 500, 200, 100
   _i=0;
-  if (have_offset){_i=(int)offset;}
-
   notTraceChange = false;
   
     
@@ -119,10 +118,10 @@ void drawTraceLine()
   if (notTraceChange) return;
   if ((100<mouseX && mouseX<1100) && (mouseY>0) && (mouseY<200))
   {
-    if (mousePressed && flag)
+    if (mousePressed && haveNoPx) //if mouse press and can trace mouserelease  mark the mouseX and turn off trace
     {
       px = mouseX;
-      flag=false;
+      haveNoPx=false;
     }
     stroke(0, 100);
     strokeWeight(1);
@@ -207,7 +206,7 @@ void mouseReleased()
 {
   if(notTraceChange) return;
   _i = (int)(_i+(px-mouseX)/(int)(_PIXLEN));
-  flag=true;
+  haveNoPx=true;
 }
 
 
@@ -462,7 +461,7 @@ void drawPart2()
   //line(width/10, height/8/2, width, height/8/2);
   textSize(10);
   fill(100);
-  text(theSecondId, 0, 150, 90, 60);
+  text(theValueId, 0, 150, 90, 60);
 }
 
 void drawPart3()
@@ -531,7 +530,7 @@ void drawPart3()
   //line(width/10, height/8/2, width, height/8/2);
   // textSize(10);
   // fill(100);
-  // text(theSecondId, 0, 150, 90, 60);
+  // text(theValueId, 0, 150, 90, 60);
   they += wy;
 }
 

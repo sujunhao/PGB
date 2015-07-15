@@ -17,49 +17,21 @@ function createXMLHttpRequest() {
 }
 var req = createXMLHttpRequest();
 
-var param1, param2, param3;
+var param1, param2, param3; //keep html receive value
 
-var data;
-var theChromosome, theStart, theEnd, theLength, theSequence, theSecondId, theStep;
+var data;  //this is a xml include all receive data
+
+var theChromosome, theStart, theEnd, theLength, theSequence, theValueId, theStep;
+var theV = new Array();  //the value array
+var maxV = 0;            //max number of the value array
 var theRsId, theEsId, theVsId;
 var theRs = new Array();
 var theEs = new Array();
 var theVs = new Array();
-var theV = new Array();
-var maxV = 0;
-var theFlag = false; //if have new query
-var theAdd = false;
-var have_offset = false; //if param2 have a offset -50  
-var is_want_i_change = true;
 
-var offset = 50;
+var theFlag = false; //if js want processing to update
+var theAdd = false;  //if processing want js to update
 
-var _i = 10;
-
-update = function() {
-    if (theAdd) {
-        document.getElementById("p2").value = param2;
-        document.getElementById("p3").value = param3;
-        theAdd = false;
-        // the_iChange=false;
-    } else {
-        param1 = document.getElementById("p1").value;
-        param2 = document.getElementById("p2").value;
-        if (param2 > offset) {
-            param2 -= offset;
-            have_offset = true;
-        } else {
-            have_offset = false;
-        }
-        param3 = document.getElementById("p3").value;
-    }
-
-    var querry = "update";
-    req.onreadystatechange = getReadyStateHandler;
-    querry = "action=update" + "&chr=" + param1 + "&start=" + param2 + "&end=" + param3;
-    req.open("GET", "servlet/test.do?" + querry, true);
-    req.send(null);
-}
 
 
 function ES() {
@@ -95,12 +67,31 @@ function VS() {
 }
 
 
+
+update = function() {
+    if (theAdd) {
+        document.getElementById("p2").value = param2;
+        document.getElementById("p3").value = param3;
+        theAdd = false;
+    } else {
+        param1 = document.getElementById("p1").value;
+        param2 = document.getElementById("p2").value;
+        param3 = document.getElementById("p3").value;
+    }
+
+    var querry = "update";
+    req.onreadystatechange = getReadyStateHandler;
+    querry = "action=update" + "&chr=" + param1 + "&start=" + param2 + "&end=" + param3;
+    req.open("GET", "servlet/test.do?" + querry, true);
+    req.send(null);
+}
+
+
+
 function getReadyStateHandler() {
     if (req.readyState == 4) {
         if (req.status == 200) {
             data = req.responseXML.firstChild.childNodes;
-
-            theFlag = true;
 
             for (var i = 0; i < data.length; i++) {
                 switch (data[i].nodeName) {
@@ -120,7 +111,7 @@ function getReadyStateHandler() {
                         theSequence = data[i].innerHTML;
                         break;
                     case "Values":
-                        theSecondId = data[i].getAttribute('id');
+                        theValueId = data[i].getAttribute('id');
                         theStep = parseInt(data[i].childNodes[2].innerHTML);
                         var kk = (data[i].childNodes[3].innerHTML).split(';');
                         maxV = 0;
@@ -255,6 +246,8 @@ function getReadyStateHandler() {
                         break;
                 }
             }
+
+            theFlag = true;  //let processing data change
 
             var pattern = /></g;
             var pattern1 = /<\//;
