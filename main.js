@@ -21,9 +21,10 @@ var param1, param2, param3;
 
 var data;
 var theChromosome, theStart, theEnd, theLength, theSequence, theSecondId, theStep;
-var theRsId, theEsId;
+var theRsId, theEsId, theVsId;
 var theRs = new Array();
 var theEs = new Array();
+var theVs = new Array();
 var theV = new Array();
 var maxV = 0;
 var theFlag = false; //if have new query
@@ -79,10 +80,18 @@ function SS() {
 //theRs is a Array, theRs[i] is a class RS(), it have begin, end, s, m
 function RS() {
     this.id = "";
-    this.begin = [];
-    this.end = [];
+    this.f = [];
+    this.t = [];
     this.s = 1;
     this.m = 1;
+}
+
+function VS() {
+    this.y = "";
+    this.id = "";
+    this.f = 1;
+    this.t = 1;
+    this.b = "";
 }
 
 
@@ -123,22 +132,23 @@ function getReadyStateHandler() {
 
                     case "Rs":
                         theRsId = data[i].getAttribute('id');
+                        while(theRs.length != 0) theRs.pop();
                         for (var j = 0; j < data[i].childNodes.length; j++) {
                             theRs[j] = new RS();
+                            theRs[j].id = data[i].childNodes[j].getAttribute('id');
                             for (var k = 0; k < data[i].childNodes[j].childNodes.length; k++) {
                                 var node = data[i].childNodes[j].childNodes[k];
-                                theRs[j].id = data[i].childNodes[j].getAttribute('id');
                                 switch (node.nodeName) {
                                     case 'F':
                                         var ss = node.innerHTML.split(',');
                                         for (var o = 0; o < ss.length; o++) {
-                                            theRs[j].begin[o] = parseInt(ss[o]);
+                                            theRs[j].f[o] = parseInt(ss[o]);
                                         }
                                         break;
                                     case 'T':
                                         var ss = node.innerHTML.split(',');
                                         for (var o = 0; o < ss.length; o++) {
-                                            theRs[j].end[o] = parseInt(ss[o]);
+                                            theRs[j].t[o] = parseInt(ss[o]);
                                         }
                                         break;
                                     case 's':
@@ -158,15 +168,40 @@ function getReadyStateHandler() {
 
                         break;
                     case "Vs":
+                        theVsId = data[i].getAttribute('id');
+                        while(theVs.length != 0) theVs.pop();
+                        for (var j = 0; j < data[i].childNodes.length; j++) {
+                            theVs[j] = new VS();
+                            theVs[j].id = data[i].childNodes[j].getAttribute('id');
+                            theVs[j].y = data[i].childNodes[j].getAttribute('Y');
+                            for (var k = 0; k < data[i].childNodes[j].childNodes.length; k++) {
+                                var node = data[i].childNodes[j].childNodes[k];
+                                switch (node.nodeName) {
+                                    case 'F':
+                                        theVs[j].f = parseInt(node.innerHTML);
+                                        break;
+                                    case 'T':
+                                        theVs[j].t = parseInt(node.innerHTML);
+                                        break;
+                                    case 'B':
+                                        theVs[j].b = (node.innerHTML);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+
+                        break;
 
                     case "Es":
                         theEsId = data[i].getAttribute('id');
                         while(theEs.length != 0) theEs.pop();
                         for (var j = 0; j < data[i].childNodes.length; j++) {
                             theEs[j] = new ES();
+                            theEs[j].id = data[i].childNodes[j].getAttribute('id');
                             for (var k = 0; k < data[i].childNodes[j].childNodes.length; k++) {
                                 var node = data[i].childNodes[j].childNodes[k];
-                                theEs[j].id = data[i].childNodes[j].getAttribute('id');
                                 switch (node.nodeName) {
                                     case 'F':
                                         theEs[j].f = parseInt(node.innerHTML);
