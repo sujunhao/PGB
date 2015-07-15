@@ -11,10 +11,12 @@ int px;
 
 boolean notTraceChange=false;
 
+int they = 0;
+
 void setup()
 {
   size(1100, 800);
-  background(255);
+  background(#FFEBCD);
   smooth();
   _chromosome="chr22";
   _sequence="GAGCCAAGATTGCACCACTGCACTCCAGCCTGGGCAACAGAGCAAGATTCCATCTAAAAAAAAAAAAAATTAAACAACAACAAAAAAAGTGAGCACATCATTTGTGGCGTCCAGGCACTACATCAGTGAACACAGTTGGTTTTGTGTCTGCCATGGCACTGTTAGTTCCATGGTGCGGGTTAGCAAGGTGCCTGTCCATGCCTAGTCTGAGATGAGTTCTGGCTAAGGTGCCACCAGACACTGTTTGGATGCTGCAATACTGCCTTCTGTTTGCAGGCCTTCTATGTCCCAAAATCTCAGGCCTGGGGAACTAAGCCTCCAACCTCCCGCTGCCCTTACAACTGGCTTTCGGAGAAGCCCCCCAAGAAAATAGAGACAAGGCAAGGTCTGGAGAGTTGGGTCCCATGGTGGGCAGATTCCCAGCACCCTGCTGTGTCTTGGGGAGCACGGGGATTCCCCACTTGAAACACAGAGCCCTGCCCTCCACCCCAGCAGCCGCCAGCCAGGTTGGAAGCCCCTAAATCCTGACCCCACGTGCAGAGTCTCACTACCGGGCACCCGCATGTGTAAAGACGTGAAGGGTGGAGAATCTTTGGAGGGAACACTGCTTCTCAGGGAGACACAATCTGGAATTCAAAGTTTCTAAATTGCATTTTCCTTTTTAAGGAAGTAGCAGATAATATTTGTAGAAAATGTACTGCACTGAGGAAAGTATACAGGAGAACGTGGAATTCATCTGTGTTCTCCAAGCCTGCTGTCACCAATGTAAATATTTTGGTGTGTTTCCTTCCAATCTCTTTTCTTTACGTGCTTTTAAGTTAAATGCGAATCATACTGTAAAAACGCCTGGCGTTCTGCTTCTTCACTGCTGGTGCGTCCTCATCTTCCACACGCTACAGTCTGAATGTGTTTCTCCAAAAGCGTGTGCTGGAGACGGAATCCCCAAAGCAACAGCGTGGGGAGGTGGGGGCTCTAGGAGGTGATGAGGCCTCCGCCCTCAGGAATGGGTCAATGCCATTATGGCAGGAGTGGGTTCCTCACTAAAGGACCA";
@@ -27,8 +29,10 @@ void setup()
   _PIXLEN=1000/_show;
 }
 
+
 void draw()
 {
+  background(255);
   if (theFlag) {myupdate();}
   
   
@@ -57,10 +61,17 @@ void draw()
 
 
   drawPart1();  
+  drawPart2();
+  they = 200;
+  drawPart3();
 
   drawTraceLine();
 
   showI();
+
+  textSize(10);
+  text("zk", 0, 800);
+  rect(30, 790, 20, 10);
 
  
 }
@@ -72,7 +83,7 @@ void myupdate()
   _start=theStart;
   _end=theEnd;
   _long=_end-_start;
-  if (_long<=1200)
+  if (_long<=1500)
   {
     _sequence=theSequence;
   }
@@ -94,7 +105,7 @@ void myupdate()
 
 void showI()
 {
-  int x=100, y=100;
+  int x=100, y=100-16;
   fill(255);
   rect(x, y, 50, 15);
   fill(0);
@@ -106,7 +117,7 @@ void showI()
 void drawTraceLine()
 { 
   if (notTraceChange) return;
-  if ((100<mouseX && mouseX<1100) && (mouseY>0) && (mouseY<100))
+  if ((100<mouseX && mouseX<1100) && (mouseY>0) && (mouseY<200))
   {
     if (mousePressed && flag)
     {
@@ -115,21 +126,25 @@ void drawTraceLine()
     }
     stroke(0, 100);
     strokeWeight(1);
-    line(mouseX, 0, mouseX, 100);
+    line(mouseX, 0, mouseX, 200);
     fill(255);
     if (mouseX<1000)
     {
       rect(mouseX, 10, 100, 15);
+      rect(mouseX, 110, 100, 15);
       fill(0);
       textSize(10);
       text((int)((mouseX-100)/(int)(_PIXLEN)+_i+_start), mouseX+5, 22.5);
+      text(theV[(int)((mouseX-100)/(int)(_PIXLEN)+_i)], mouseX+5, 122.5);
     }
     else
     {
       rect(mouseX-100, 10, 100, 15);
+      rect(mouseX-100, 110, 100, 15);
       fill(0);
       textSize(10);
       text((int)((mouseX-100)/(int)(_PIXLEN)+_i+_start), mouseX-100+5, 22.5);
+      text(theV[(int)((mouseX-100)/(int)(_PIXLEN)+_i)], mouseX-100+5, 122.5);
     }
   }
 }
@@ -217,7 +232,7 @@ void drawPart1()
   rect(0, 0, 100, height/8);
 
 
-  if (_show==_MINLEN)//draw each atcg
+  if (_long<=1500 && _show==_MINLEN)//draw each atcg
   {
     int x=100, y=height/8/2-5, k=_PIXLEN, ii=_i;
     for (int i=0; i<_show; i++)
@@ -277,7 +292,7 @@ void drawPart1()
         x +=k;
     }
   }
-  else if (_show<=1000)
+  else if (_long<=1500 && _show<=1000)
   {
     int x=100, y=0, k=10, ii=_i, t=10-k;
     //draw left up info
@@ -380,9 +395,150 @@ void drawPart1()
         x +=k;
     }
   }
+  else
+  {
+    line(100, 50, 1100, 50);
+    int x=100, y=50, k=10;
+    //draw left up info             
+    while(x<=1100)
+    {
+        stroke(0);
+        strokeWeight(0.5);
+        if (x%100==0)
+        {
+
+          line(x, y-10, x, y);
+          fill(0);
+          textSize(10);
+          text(_i+_start+((x-100)/k), x+3, y);
+        }
+        if (x%50==0 && x%100!=0)
+        {
+          line(x, y, x, y+10);
+          fill(0);
+          textSize(10);
+          text(_i+_start+((x-100)/k), x+3, y+10);
+        }
+        x += 50;
+    }
+  }
   //line(width/10, height/8/2, width, height/8/2);
   textSize(15);
   fill(50);
   text(_chromosome, 5, width/10/2);
 }
 
+void drawPart2()
+{
+  stroke(0);
+  strokeWeight(0.5);
+  fill(#FFEBCD); //color of part_1
+  rect(0, 100, 1100, 100); //part_1
+  rect(0, 100, 100, 100);
+
+  line(100, 150, 1100, 150);
+
+  int x=100, y=50+100, k=_PIXLEN,  tk = 50, ii=_i, t;
+  for (int i=0; i<_show; i++)
+  {
+      float t = map(abs(theV[ii]), 0, maxV, 0, 50);
+      noStroke();
+      fill(#00BFFF);
+      if (theV[ii]>=0)
+      {
+        rect(x, y-t, k, t); 
+      }
+      else
+      {
+        rect(x, 150, k, t);
+      }
+           
+      ii+=1;  
+      x +=k;
+  }
+  
+
+  
+  //line(width/10, height/8/2, width, height/8/2);
+  textSize(10);
+  fill(100);
+  text(theSecondId, 0, 150, 90, 60);
+}
+
+void drawPart3()
+{
+  int k, wy=200, ly = they;
+  if (theEs.length<=6) wy  = 100;
+
+  k = wy/(theEs.length); //the gene can fill height
+  float o = max((k-10)/2, k/5);
+  stroke(0);
+  strokeWeight(0.5);
+  fill(#FFEBCD); //color of part_1
+  rect(0, ly, 1100, wy); //part_1
+  rect(0, ly, 100, wy);
+
+  for (var i=0; i<theEs.length; i++)
+  {
+
+    textSize(k-2*o);
+    fill(100);
+    text(theEs[i].id, 0, ly+(i+1)*k-o);
+    if (theEs[i].t <= _start+_i) continue;
+    if (theEs[i].f >= _start+_i+_show) continue;
+    
+    String mark = "<";
+    if (theEs[i].s == 1) mark = "<";
+
+    for (var j=0; j<theEs[i].S.length; j++)
+    {
+      var f = theEs[i].S[j].f, t = theEs[i].S[j].t;
+      if (f<_start+_i) f = _start+_i;
+      if (t>_start+_i+_show) t=_start+_i+_show;
+
+      switch(theEs[i].S[j].y) //XLD 012
+      {
+          case 0:
+              fill(#ADFF2F);
+              rect(100+abs(f-_start-_i)*_PIXLEN, ly+k*i+o, abs(t-f+1)*_PIXLEN, k-2*o);
+              if (abs(t-f)*_PIXLEN>k-2*o)
+              drawDir(mark, 100+abs(f-_start-_i)*_PIXLEN, 100+abs(t-_start-_i)*_PIXLEN, ly+(i+1)*k-o, k, o);
+              break;
+          case 1:
+              fill(#778899);
+              rect(100+abs(f-_start-_i)*_PIXLEN, ly+k*i+o, abs(t-f+1)*_PIXLEN, k-2*o);
+              break;
+          case 2:
+              fill(#FFA500);
+              rect(100+abs(f-_start-_i)*_PIXLEN, ly+k*i+o, abs(t-f+1)*_PIXLEN, k-2*o);
+              if (abs(t-f)*_PIXLEN>k-2*o)
+              drawDir(mark, 100+abs(f-_start-_i)*_PIXLEN, 100+abs(t-_start-_i)*_PIXLEN, ly+(i+1)*k-o, k, o);
+              break;
+          default:
+              break;
+      }
+    }
+
+    
+  }
+
+  
+
+  
+  
+
+  
+  //line(width/10, height/8/2, width, height/8/2);
+  // textSize(10);
+  // fill(100);
+  // text(theSecondId, 0, 150, 90, 60);
+  they += wy;
+}
+
+void drawDir(String s, float x1, float x2, float y, int k, int o)
+{
+  fill(0);
+  textSize(k-2*o);
+  text(s, x1, y);
+  text(s, x2-(k-2*o), y);
+}
