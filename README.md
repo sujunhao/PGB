@@ -8,4 +8,4 @@ It can show some Gene informations like reference sequence,variants,elements,val
 
 Now I am working on translate the receive data(a XML object) into visable website.
 
-The website is rely on Apache-tomcat 6.0+,and I choose [processingjs](http://processingjs.org/) to visualize the Genome.
+The website is power by Apache-tomcat 6.0+,and I choose [processingjs](http://processingjs.org/) to visualize the Genome.
