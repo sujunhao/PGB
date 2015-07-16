@@ -70,6 +70,11 @@ function VS() {
 }
 
 
+var theTrap = [];
+function Trap(){
+    this.r = [];
+    this.s = "";
+}
 
 update = function() {
     if (theAdd) {

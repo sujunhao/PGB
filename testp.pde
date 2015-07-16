@@ -1,5 +1,3 @@
-
-
 float _PIXLEN;//each ATCG pixels length
 int _show; //show how many seq
 int _MINLEN=100; //the least _show number
@@ -12,7 +10,7 @@ int nextY = 0;
 
 void setup()
 {
-  size(1100, 800);
+  size(1100, 2000);
   background(#FFEBCD);
   smooth();
 
@@ -32,15 +30,11 @@ void draw()
   drawPart2();
   nextY = 200;
   drawPart3();
+  drawPart4(); //theRs
 
-  drawTraceLine();
-
+  drawTrace();
+  
   showI();
-
-
-  fill(249,245,56);
-              
-  rect(100.1, 700.2, 100.9, 50.1);
 }
 
 void wantupdata()    //test _i and update data and _i
@@ -70,8 +64,24 @@ void showI()
 }
 
 //the move line
-void drawTraceLine()
+void drawTrace()
 { 
+  for (int i=0; i<theTrap.length; i++)
+  {
+    if ((mouseX>=theTrap[i].r[0] && mouseX<=theTrap[i].r[0]+theTrap[i].r[2])&&(mouseY>=theTrap[i].r[1] && mouseY<=theTrap[i].r[1]+theTrap[i].r[3]))
+    {
+      var x = theTrap[i].r[0], y = theTrap[i].r[1], w = theTrap[i].r[2], h = theTrap[i].r[3];
+      var k=-100;
+      if (mouseX<1000) k=100;
+        
+      rect(mouseX-100+k, y - 15, 100, 15);
+      stroke(0, 100);
+      strokeWeight(1);
+      fill(255);
+      textSize(10);
+      text(theTrap[i].s, mouseX-100+5, 22.5);
+    }
+  }
   if (notTraceChange) return;
   if ((100<mouseX && mouseX<1100) && (mouseY>0) && (mouseY<200))
   {
@@ -187,24 +197,19 @@ void mouseWheel(MouseEvent event)
   _i+=e;
   rangechange = true;
 }
-
-
-
-
-
 //_i, _show, _PIXLEN
 void drawPart1()
 {
   stroke(0);
   strokeWeight(0.5);
   fill(#FFEBCD); //color of part_1
-  rect(0, 0, 1100, height/8); //part_1
-  rect(0, 0, 100, height/8);
+  rect(0, 0, 1100, 100); //part_1
+  rect(0, 0, 100, 100);
 
 
   if (theLong<=1500 && _show==_MINLEN)//make sure have sequence string and want to show each atcg
   {
-    float x=100, y=height/8/2-5, k=_PIXLEN;
+    float x=100, y=100/2-5, k=_PIXLEN;
     float ii=_i;
     for (int i=0; i<_show; i++)
     {
@@ -316,7 +321,7 @@ void drawPart1()
     k=_PIXLEN;
     t=10-k;
     x=100;
-    y=height/8/2-5;
+    y=100/2-5;
     for (int i=0; i<_show; i++)
     {
         noStroke();
@@ -448,6 +453,7 @@ void drawPart3()
   rect(0, ly, 1100, wy); //part_1
   rect(0, ly, 100, wy);
 
+  noStroke();
   for (var i=0; i<theEs.length; i++)
   {
 
@@ -458,7 +464,7 @@ void drawPart3()
     if (theEs[i].f >= theStart+_i+_show) continue;
     
     String mark = "<";
-    if (theEs[i].s == 1) mark = "<";
+    if (theEs[i].s == 1) mark = ">";
 
     for (var j=0; j<theEs[i].S.length; j++)
     {
@@ -511,4 +517,61 @@ void drawDir(String s, float x1, float x2, float y, int k, int o)
   textSize(k-2*o);
   text(s, x1, y);
   text(s, x2-(k-2*o), y);
+}
+
+
+void drawPart4()
+{
+
+
+  while(theTrap.length != 0) theTrap.pop();
+
+  color [] col = {color(78,238,148), color(112,202,238)};
+
+  float k, wy=theRs.length*15, ly = nextY;
+
+  k = wy/(theRs.length); //the gene can fill height
+  float o = max((k-10)/2, k/5);
+
+  stroke(0);        //set the content box
+  strokeWeight(0.5);
+  fill(#FFEBCD); 
+  rect(0, ly, 1100, wy); 
+  rect(0, ly, 100, wy);
+
+  noStroke();
+  for (int i=0; i<theRs.length; i++)
+  {
+
+    textSize(k-2*o);
+    fill(100);
+    text(theRs[i].id, 0, ly+(i+1)*k-o);
+    for (int j=0; j<theRs[i].f.length; j++)
+    {
+        int f = theRs[i].f[j], t = theRs[i].t[j];
+        if (t <= theStart+_i) continue;
+        if (f >= theStart+_i+_show) continue;
+        
+        if (f<theStart+_i) f = theStart+_i;
+        if (t>theStart+_i+_show) t=theStart+_i+_show;
+
+        String mark = "<";
+        if (theRs[i].s == 1) mark = ">";
+
+        fill(col[j%2]);
+        rect(100+abs(f-theStart-_i)*_PIXLEN, ly+k*i+o, abs(t-f+1)*_PIXLEN, k-2*o);
+        
+        var rr = new Array(100+abs(f-theStart-_i)*_PIXLEN, ly+k*i+o, abs(t-f+1)*_PIXLEN, k-2*o);
+        var p = new Trap();
+        p.r = rr;
+        p.s = theRs[i].id;
+        theTrap.push(p);
+
+        if (abs(t-f)*_PIXLEN>k-2*o)
+        drawDir(mark, 100+abs(f-theStart-_i)*_PIXLEN, 100+abs(t-theStart-_i)*_PIXLEN, ly+(i+1)*k-o, k, o);
+
+    }
+    
+  }
+  nextY += wy;
 }
