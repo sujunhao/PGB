@@ -1,12 +1,12 @@
 
 
-int _PIXLEN;//each ATCG pixels length
+float _PIXLEN;//each ATCG pixels length
 int _show; //show how many seq
 int _MINLEN=100; //the least _show number
 int _i = 0; //first node index in require sequence
 
-int px;  //pre mouseX
-boolean haveNoPx=true;
+float px;  //pre mouseX
+boolean haveNoPx=true, rangechange=false;
 
 int nextY = 0;
 
@@ -18,7 +18,6 @@ void setup()
 
   _show =1000;
   _PIXLEN = 1;
-
 }
 
 
@@ -37,31 +36,26 @@ void draw()
   drawTraceLine();
 
   showI();
+
+
+  fill(249,245,56);
+              
+  rect(100.1, 700.2, 100.9, 50.1);
 }
 
-void wantupdata()
+void wantupdata()    //test _i and update data and _i
 {
-  if (haveNoPx)
-  if (_i<0 || (_i>theLong-_show)) //if _i out of range
+  if (!haveNoPx) return;
+  if (rangechange)                              //if (_i<0 || (_i>theLong-_show)) //if _i out of range
   {
       println(_i);
       notTraceChange=true;
-      if (_i<0) //left update
-      {
-          param2 = (int)((int)param2 + (int)_i);
-          param3 = (int)((int)param3 + (int)_i);
-          _i=0;
-          theAdd=true;
-          update();
-      }
-      else
-      {
-          param2 = (int)((int)param2 + (int)_i);
-          param3 = (int)((int)param3 + (int)_i);
-          _i=0;
-          theAdd=true;
-          update();
-      }
+      param2 = (int)((int)param2 + (int)_i);
+      param3 = (int)((int)param2 + (int)_i + _show);
+      _i=0;
+      theAdd=true;
+      rangechange = false;
+      update();
   }
 }
 
@@ -96,8 +90,8 @@ void drawTraceLine()
       rect(mouseX, 110, 100, 15);
       fill(0);
       textSize(10);
-      text((int)((mouseX-100)/(int)(_PIXLEN)+_i+theStart), mouseX+5, 22.5);
-      text(theV[(int)((mouseX-100)/(int)(_PIXLEN)+_i)], mouseX+5, 122.5);
+      text((int)((mouseX-100)/(_PIXLEN)+_i+theStart), mouseX+5, 22.5);
+      text(theV[(int)((mouseX-100)/(_PIXLEN)+_i)], mouseX+5, 122.5);
     }
     else
     {
@@ -105,8 +99,8 @@ void drawTraceLine()
       rect(mouseX-100, 110, 100, 15);
       fill(0);
       textSize(10);
-      text((int)((mouseX-100)/(int)(_PIXLEN)+_i+theStart), mouseX-100+5, 22.5);
-      text(theV[(int)((mouseX-100)/(int)(_PIXLEN)+_i)], mouseX-100+5, 122.5);
+      text((int)((mouseX-100)/(_PIXLEN)+_i+theStart), mouseX-100+5, 22.5);
+      text(theV[(int)((mouseX-100)/(_PIXLEN)+_i)], mouseX-100+5, 122.5);
     }
   }
 }
@@ -121,60 +115,68 @@ void keyPressed()
     } else if (keyCode == LEFT) {
       _i = _i-1;
     } else if(keyCode ==UP){
-      int k = _PIXLEN;
+      float k = _PIXLEN;
       switch(_show)
       {
           case 100:
             _show = 200;
-            _PIXLEN=1000/_show;
              break;
            case 200:
             _show = 500;
-            _PIXLEN=1000/_show;
              break;
            case 500:
             _show = 1000;
-            _PIXLEN=1000/_show;
              break;
            default:
             if (_show>=1000)
             {
-              ;
+              _show *= 2;
             }
             break;         
       }
+      _PIXLEN=1000/_show;
       _i = (int)(_i+(mouseX-100)*(1.0/k-1.0/_PIXLEN));
     }
     else if (keyCode==DOWN){
-      int k = _PIXLEN;
+      float k = _PIXLEN;
       switch(_show)
       {
           case 1000:
             _show = 500;
-            _PIXLEN=1000/_show;
              break;
            case 500:
             _show = 200;
-            _PIXLEN=1000/_show;
              break;
            case 200:
             _show = 100;
-            _PIXLEN=1000/_show;
              break;
            default:
+            if (_show>1000 && _show<=2000)
+            {
+              _show = 1000;
+            }
+            else if(_show>2000)
+            {
+              _show /= 2;
+            }
+
             break;         
       }
+      _PIXLEN = 1000.0/_show;
       _i = (int)(_i+(mouseX-100)*(1.0/k-1.0/_PIXLEN));
     }
    }
+
+   rangechange = true;
 }
 
 
 void mouseReleased()
 {
   if(notTraceChange) return;
-  _i = (int)(_i+(px-mouseX)/(int)(_PIXLEN));
+  _i = (int)(_i+(px-mouseX)/(_PIXLEN));
   haveNoPx=true;
+  rangechange = true;
 }
 
 
@@ -183,6 +185,7 @@ void mouseWheel(MouseEvent event)
   if (notTraceChange) return;
   float e = (int)event.getCount();
   _i+=e;
+  rangechange = true;
 }
 
 
@@ -199,9 +202,10 @@ void drawPart1()
   rect(0, 0, 100, height/8);
 
 
-  if (theLong<=1500 && _show==_MINLEN)//draw each atcg
+  if (theLong<=1500 && _show==_MINLEN)//make sure have sequence string and want to show each atcg
   {
-    int x=100, y=height/8/2-5, k=_PIXLEN, ii=_i;
+    float x=100, y=height/8/2-5, k=_PIXLEN;
+    float ii=_i;
     for (int i=0; i<_show; i++)
     {
         noStroke();
@@ -245,7 +249,7 @@ void drawPart1()
               break;              
         }
         ii++;
-        if (x%100==0)
+        if ((int)x%100==0)
         {
           stroke(0);
           strokeWeight(0.5);
@@ -261,7 +265,8 @@ void drawPart1()
   }
   else if (theLong<=1500 && _show<=1000)
   {
-    int x=100, y=0, k=10, ii=_i, t=10-k;
+    float x=100, y=0, k=10, t=10-k;
+    int ii = _i;
     //draw left up info
     noStroke();
     for (int i = 0; i < 4; ++i) {
@@ -342,20 +347,20 @@ void drawPart1()
         ii++;
         stroke(0);
         strokeWeight(0.5);
-        if (x%100==0)
+        if ((int)x%100==0)
         {
 
           line(x, y-10-t, x, y-t);
           fill(0);
           textSize(10);
-          text(_i+theStart+((x-100)/k), x+3, y-t);
+          text((int)(_i+theStart+((x-100)/k)), x+3, y-t);
         }
-        if (x%50==0 && x%100!=0)
+        if ((int)x%50==0 && (int)x%100!=0)
         {
           line(x, y+k+t, x, y+10+k+t);
           fill(0);
           textSize(10);
-          text(_i+theStart+((x-100)/k), x+3, y+k+t+10);
+          text((int)(_i+theStart+((x-100)/k)), x+3, y+k+t+10);
         }
         
         
@@ -365,13 +370,13 @@ void drawPart1()
   else
   {
     line(100, 50, 1100, 50);
-    int x=100, y=50, k=10;
+    float x=100, y=50, k=10;
     //draw left up info             
     while(x<=1100)
     {
         stroke(0);
         strokeWeight(0.5);
-        if (x%100==0)
+        if ((int)x%100==0)
         {
 
           line(x, y-10, x, y);
@@ -379,7 +384,7 @@ void drawPart1()
           textSize(10);
           text(_i+theStart+((x-100)/k), x+3, y);
         }
-        if (x%50==0 && x%100!=0)
+        if ((int)x%50==0 && (int)x%100!=0)
         {
           line(x, y, x, y+10);
           fill(0);
@@ -405,13 +410,13 @@ void drawPart2()
 
   line(100, 150, 1100, 150);
 
-  int x=100, y=50+100, k=_PIXLEN,  tk = 50, ii=_i, t;
+  float x=100, y=50+100, k=_PIXLEN, t;
   for (int i=0; i<_show; i++)
   {
-      float t = map(abs(theV[ii]), 0, maxV, 0, 50);
+      float t = map(abs(theV[_i+i]), 0, maxV, 0, 50);
       noStroke();
       fill(#00BFFF);
-      if (theV[ii]>=0)
+      if (theV[_i+i]>=0)
       {
         rect(x, y-t, k, t); 
       }
@@ -419,9 +424,7 @@ void drawPart2()
       {
         rect(x, 150, k, t);
       }
-           
-      ii+=1;  
-      x +=k;
+      x += k;
   }
   
 
@@ -434,7 +437,7 @@ void drawPart2()
 
 void drawPart3()
 {
-  int k, wy=200, ly = nextY;
+  float k, wy=200, ly = nextY;
   if (theEs.length<=6) wy  = 100;
 
   k = wy/(theEs.length); //the gene can fill height
