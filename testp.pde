@@ -8,6 +8,8 @@ boolean haveNoPx=true, rangechange=false;
 
 int nextY = 0;
 
+color [] col = {color(78,238,148), color(112,202,238)};
+
 void setup()
 {
   size(1100, 2000);
@@ -49,6 +51,7 @@ void wantupdata()    //test _i and update data and _i
       _i=0;
       theAdd=true;
       rangechange = false;
+      while(theTrap.length != 0) theTrap.pop();  //delete theTrap array in order to update
       update();
   }
 }
@@ -71,15 +74,18 @@ void drawTrace()
     if ((mouseX>=theTrap[i].r[0] && mouseX<=theTrap[i].r[0]+theTrap[i].r[2])&&(mouseY>=theTrap[i].r[1] && mouseY<=theTrap[i].r[1]+theTrap[i].r[3]))
     {
       var x = theTrap[i].r[0], y = theTrap[i].r[1], w = theTrap[i].r[2], h = theTrap[i].r[3];
-      var k=-100;
-      if (mouseX<1000) k=100;
+      var k1=theTrap[i].s.length*7;
+      if (k1<80) k1=80;
+      var k2=-k1;
+      if (mouseX>1100-k1) k1=0;
         
-      rect(mouseX-100+k, y - 15, 100, 15);
-      stroke(0, 100);
-      strokeWeight(1);
       fill(255);
+      stroke(1, 100);
+      strokeWeight(1);
+      rect(mouseX+k1+k2, y - 15, -k2, 15);
+      fill(0);
       textSize(10);
-      text(theTrap[i].s, mouseX-100+5, 22.5);
+      text(theTrap[i].s, mouseX+k2+k1+5, y-3);
     }
   }
   if (notTraceChange) return;
@@ -437,8 +443,19 @@ void drawPart2()
   //line(width/10, height/8/2, width, height/8/2);
   textSize(10);
   fill(100);
-  text(theValueId, 0, 150, 90, 60);
+  text((theValueId), 0, 150, 90, 60);
 }
+
+
+void drawDir(String s, float x1, float x2, float y, int k, int o)
+{
+  fill(0);
+  textSize(k-2*o);
+  text(s, x1, y);
+  text(s, x2-(k-2*o), y);
+}
+
+
 
 void drawPart3()
 {
@@ -457,21 +474,31 @@ void drawPart3()
   for (var i=0; i<theEs.length; i++)
   {
 
-    textSize(k-2*o);
-    fill(100);
-    text(theEs[i].id, 0, ly+(i+1)*k-o);
+    // textSize(k-2*o);
+    // fill(100);
+    // text(theEs[i].id, 0, ly+(i+1)*k-o);
+
+    var f = theEs[i].f, t = theEs[i].t;
     if (theEs[i].t <= theStart+_i) continue;
     if (theEs[i].f >= theStart+_i+_show) continue;
-    
+    if (f<theStart+_i) f = theStart+_i;
+    if (t>theStart+_i+_show) t=theStart+_i+_show;
+
+    var rr = new Array(100+abs(f-theStart-_i)*_PIXLEN, ly+k*i+o, abs(t-f+1)*_PIXLEN, k-2*o);
+    var p = new Trap();
+    p.r = rr;
+    p.s = theEs[i].id;
+    theTrap.push(p);
+
+      
     String mark = "<";
     if (theEs[i].s == 1) mark = ">";
-
     for (var j=0; j<theEs[i].S.length; j++)
     {
-      var f = theEs[i].S[j].f, t = theEs[i].S[j].t;
+      f = theEs[i].S[j].f;
+      t = theEs[i].S[j].t;
       if (f<theStart+_i) f = theStart+_i;
       if (t>theStart+_i+_show) t=theStart+_i+_show;
-
       switch(theEs[i].S[j].y) //XLD 012
       {
           case 0:
@@ -497,37 +524,14 @@ void drawPart3()
 
     
   }
-
-  
-
-  
-  
-
-  
-  //line(width/10, height/8/2, width, height/8/2);
-  // textSize(10);
-  // fill(100);
-  // text(theValueId, 0, 150, 90, 60);
   nextY += wy;
 }
 
-void drawDir(String s, float x1, float x2, float y, int k, int o)
-{
-  fill(0);
-  textSize(k-2*o);
-  text(s, x1, y);
-  text(s, x2-(k-2*o), y);
-}
+
 
 
 void drawPart4()
 {
-
-
-  while(theTrap.length != 0) theTrap.pop();
-
-  color [] col = {color(78,238,148), color(112,202,238)};
-
   float k, wy=theRs.length*15, ly = nextY;
 
   k = wy/(theRs.length); //the gene can fill height
@@ -543,9 +547,9 @@ void drawPart4()
   for (int i=0; i<theRs.length; i++)
   {
 
-    textSize(k-2*o);
-    fill(100);
-    text(theRs[i].id, 0, ly+(i+1)*k-o);
+    // textSize(k-2*o);
+    // fill(100);
+    // text(theRs[i].id, 0, ly+(i+1)*k-o);
     for (int j=0; j<theRs[i].f.length; j++)
     {
         int f = theRs[i].f[j], t = theRs[i].t[j];
@@ -575,3 +579,4 @@ void drawPart4()
   }
   nextY += wy;
 }
+
