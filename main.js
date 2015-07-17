@@ -22,6 +22,7 @@ var param1, param2, param3; //keep html receive value
 var data;  //this is a xml include all receive data
 
 var theChromosome, theStart, theEnd, theLength, theSequence, theValueId, theStep;
+var theLong; //theEnd-theStart;
 var theV = new Array();  //the value array
 var maxV = 0;            //max number of the value array
 var theRsId, theEsId, theVsId;
@@ -29,8 +30,10 @@ var theRs = new Array();
 var theEs = new Array();
 var theVs = new Array();
 
-var theFlag = false; //if js want processing to update
 var theAdd = false;  //if processing want js to update
+
+
+var notTraceChange=false;  //if the Add is true ,let processing no trace change
 
 
 
@@ -67,7 +70,23 @@ function VS() {
 }
 
 
+var theTrap = [];
+function Trap(){
+    this.r = [];
+    this.s = "";
+}
 
+var level = [];
+function CreateArray()
+{
+    var k = [];
+    return k;
+}
+
+function LevelNode(){
+    this.c = 1;
+    this.n = 1;
+}
 update = function() {
     if (theAdd) {
         document.getElementById("p2").value = param2;
@@ -247,7 +266,8 @@ function getReadyStateHandler() {
                 }
             }
 
-            theFlag = true;  //let processing data change
+            theLong = theEnd - theStart;
+            notTraceChange = false;
 
             var pattern = /></g;
             var pattern1 = /<\//;
