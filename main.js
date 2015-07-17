@@ -76,6 +76,8 @@ function Trap(){
     this.s = "";
 }
 
+var level = [];
+
 update = function() {
     if (theAdd) {
         document.getElementById("p2").value = param2;

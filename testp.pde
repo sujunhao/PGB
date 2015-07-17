@@ -531,12 +531,8 @@ void drawPart3()
 
 void drawPart4()
 {
-
+  while(level.length!=0) level.pop();
   int l = theTrap.length;
-  int[] thei = new int[theRs.length*2];
-  int[] listi = new int[theRs.length*2];
-  int[] thec = new int[theRs.length*2];
-  int maxi = 0;
   for (int i=0; i<theRs.length; i++)   //how many Rs tags
   {
     for (int j=0; j<theRs[i].f.length; j++)
@@ -548,21 +544,44 @@ void drawPart4()
         if (f<theStart+_i) f = theStart+_i;
         if (t>theStart+_i+_show) t=theStart+_i+_show;
         
-        int ii=0;
         float tf = 100+abs(f-theStart-_i)*_PIXLEN, tw = abs(t-f+1)*_PIXLEN;
-        for (int p=l; p<theTrap.length; p++)
+
+        int getl=0;
+        for (int m=0; m<level.length; m++)
         {
+          int pp=1;
+          for (int n=0; n<level[m].length; n++)
+          {
+            int p = level[m][n];
             int ff = theTrap[p].r[0], ww = theTrap[p].r[2];
-            if ((tf<=ff)&&(ff<=tf+tw) || (tf<=ff+ww)&&(ff+ww<=tf+tw)) ii++;
-            else break;
+            if ((tf<=ff)&&(ff<=tf+tw) || (tf<=ff+ww)&&(ff+ww<=tf+tw))
+            {
+              pp = 0;
+              break;
+            }
+          }
+          if (pp==1)
+          {
+            level[m].push(theTrap.length-l);
+            getl=1;
+            break;
+          }
+        }
+
+        if (getl==0)
+        {
+          var k = [];
+          k.push(theTrap.length-l);
+          level.push(k);
         }
         
-        maxi = max(maxi, ii);
-        thei[theTrap.length-l]=ii;
-        if (theRs[i].s == 1)
-        thec[theTrap.length-l]=1;
-        else
-        thec[theTrap.length-l]=0;
+        
+        //maxi = max(maxi, ii);
+        // thei[theTrap.length-l]=ii;
+        // if (theRs[i].s == 1)
+        // thec[theTrap.length-l]=1;
+        // else
+        // thec[theTrap.length-l]=0;
       
         var rr = new Array(tf, 0, tw, 0);
         var p = new Trap();
@@ -573,7 +592,7 @@ void drawPart4()
     
   }
 
-  float wy=(maxi+1)*15, ly = nextY, k=15;
+  float wy=(level.length+1)*15, ly = nextY, k=15;
   float o = max((k-10)/2, k/5);
   stroke(0);        //set the content box
   strokeWeight(0.5);
@@ -582,27 +601,45 @@ void drawPart4()
   rect(0, ly, 100, wy);
 
   noStroke();
-  for (int i=l; i<theTrap.length; i++)
+  for(int m=0; m<level.length; m++)
   {
-    int tf = theTrap[i].r[0], tw = theTrap[i].r[2];
-    ii = thei[i-l];
+    for (int n=0; n<level[m].length; n++)
+    {
+      int i=level[m][n];
+      int tf = theTrap[i].r[0], tw = theTrap[i].r[2];
+      ii = m;
 
-    String mark = "<";
-    fill(col[0]);
-    if (thec[i-l]==1){
-      mark = ">";
-      fill(col[1]);
+      stroke(25);
+      strokeWeight(0.5);
+      rect(tf, ly+k*ii+o, tw, k-2*o);
+      theTrap[i].r[1]=ly+k*ii+o;
+      theTrap[i].r[3]= k-2*o;
+      // if (abs(tw)-2*o>0)
+      // drawDir(mark, tf, tf+tw, ly+(ii+1)*k-o, k, o);
+
     }
+  }
+  // for (int i=l; i<theTrap.length; i++)
+  // {
+    
+  //   ii = thei[i-l];
 
-    stroke(25);
-    strokeWeight(0.5);
-    rect(tf, ly+k*ii+o, tw, k-2*o);
-    theTrap[i].r[1]=ly+k*ii+o;
-    theTrap[i].r[3]= k-2*o;
-    if (abs(tw)-2*o>0)
-    drawDir(mark, tf, tf+tw, ly+(ii+1)*k-o, k, o);
+  //   String mark = "<";
+  //   fill(col[0]);
+  //   if (thec[i-l]==1){
+  //     mark = ">";
+  //     fill(col[1]);
+  //   }
 
-  }    
+  //   stroke(25);
+  //   strokeWeight(0.5);
+  //   rect(tf, ly+k*ii+o, tw, k-2*o);
+  //   theTrap[i].r[1]=ly+k*ii+o;
+  //   theTrap[i].r[3]= k-2*o;
+  //   if (abs(tw)-2*o>0)
+  //   drawDir(mark, tf, tf+tw, ly+(ii+1)*k-o, k, o);
+
+  // }    
   nextY += wy;
 }
 
