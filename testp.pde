@@ -1,7 +1,7 @@
 float _PIXLEN;//each ATCG pixels length
-int _show; //show how many seq
+_show; //show how many seq
 int _MINLEN=100; //the least _show number
-int _i = 0; //first node index in require sequence
+_i = 0; //first node index in require sequence
 
 float px;  //pre mouseX
 boolean haveNoPx=true, rangechange=false;
@@ -45,7 +45,7 @@ void wantupdata()    //test _i and update data and _i
   if (!haveNoPx) return;
   if (rangechange || theStart+_i+_show>theEnd)                              //if (_i<0 || (_i>theLong-_show)) //if _i out of range
   {
-      println(_i);
+      //println(_i);
       notTraceChange=true;
       param2 = (int)((int)param2 + (int)_i);
       param3 = (int)((int)param2 + (int)_i + _show);
@@ -452,14 +452,16 @@ void drawPart2()
   line(100, 150, 1100, 150);
 
   float x=100, y=50+100, k=_PIXLEN, t, __show=_show, _k=k;
+  int __i=_i;
   if (_show>1500)
   {
     __show = 1500;
-    _k=(width-100)/1500;
+    _k=1000.0/1500;
+    __i=0;
   }
   for (int i=0; i<__show; i++)
   {
-      float t = map(abs(theV[_i+i]), 0, maxV, 0, 50);
+      float t = map(abs(theV[__i+i]), 0.0, maxV, 0.0, 50.0);
       noStroke();
       if (t<50/3)
       fill(158,202,225);
@@ -467,7 +469,7 @@ void drawPart2()
       fill(107,174,214);
       else
       fill(49,130,189);
-      if (theV[_i+i]>=0)
+      if (theV[__i+i]>=0)
       {
         rect(x, y-t, _k, t); 
       }
@@ -524,8 +526,8 @@ void drawPart3()
       {
         int p = level[m][n].n;
         int ff = theTrap[p].r[0], ww = theTrap[p].r[2];
-        if ((tf<=ff)&&(ff<=tf+tw) || (tf<=ff+ww)&&(ff+ww<=tf+tw))
-        {
+        if ((tf<=ff)&&(ff<=tf+tw) || (tf<=ff+ww)&&(ff+ww<=tf+tw) || ((ff<=tf)&&(tf<=ff+ww)) || ((ff<=tf+tw)&&(tf+tw<=ff+ww)))
+            {
           pp = 0;
           break;
         }

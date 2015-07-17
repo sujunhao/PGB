@@ -33,6 +33,8 @@ var theVs = new Array();
 var theAdd = false;  //if processing want js to update
 
 
+var _i, _show;
+
 var notTraceChange=false;  //if the Add is true ,let processing no trace change
 
 
