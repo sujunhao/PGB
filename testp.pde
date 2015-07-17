@@ -421,21 +421,26 @@ void drawPart2()
 
   line(100, 150, 1100, 150);
 
-  float x=100, y=50+100, k=_PIXLEN, t;
-  for (int i=0; i<_show; i++)
+  float x=100, y=50+100, k=_PIXLEN, t, __show=_show, _k=k;
+  if (_show>1500)
+  {
+    __show = 1500;
+    _k=(width-100)/1500;
+  }
+  for (int i=0; i<__show; i++)
   {
       float t = map(abs(theV[_i+i]), 0, maxV, 0, 50);
       noStroke();
       fill(#00BFFF);
       if (theV[_i+i]>=0)
       {
-        rect(x, y-t, k, t); 
+        rect(x, y-t, _k, t); 
       }
       else
       {
-        rect(x, 150, k, t);
+        rect(x, 150, _k, t);
       }
-      x += k;
+      x += _k;
   }
   
 
