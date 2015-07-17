@@ -581,14 +581,6 @@ void drawPart4()
           level.push(k);
         }
         
-        
-        //maxi = max(maxi, ii);
-        // thei[theTrap.length-l]=ii;
-        // if (theRs[i].s == 1)
-        // thec[theTrap.length-l]=1;
-        // else
-        // thec[theTrap.length-l]=0;
-      
         var rr = new Array(tf, 0, tw, 0);
         var p = new Trap();
         p.r = rr;
@@ -611,7 +603,7 @@ void drawPart4()
   {
     for (int n=0; n<level[m].length; n++)
     {
-      int i=level[m][n].n;
+      int i=level[m][n].n+l;
       int tf = theTrap[i].r[0], tw = theTrap[i].r[2];
       ii = m;
 
@@ -632,27 +624,6 @@ void drawPart4()
 
     }
   }
-  // for (int i=l; i<theTrap.length; i++)
-  // {
-    
-  //   ii = thei[i-l];
-
-  //   String mark = "<";
-  //   fill(col[0]);
-  //   if (thec[i-l]==1){
-  //     mark = ">";
-  //     fill(col[1]);
-  //   }
-
-  //   stroke(25);
-  //   strokeWeight(0.5);
-  //   rect(tf, ly+k*ii+o, tw, k-2*o);
-  //   theTrap[i].r[1]=ly+k*ii+o;
-  //   theTrap[i].r[3]= k-2*o;
-  //   if (abs(tw)-2*o>0)
-  //   drawDir(mark, tf, tf+tw, ly+(ii+1)*k-o, k, o);
-
-  // }    
   nextY += wy;
 }
 
