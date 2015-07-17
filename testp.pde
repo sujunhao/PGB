@@ -12,7 +12,7 @@ color [] col = {color(78,238,148), color(112,202,238)};
 
 void setup()
 {
-  size(1100, 2000);
+  size(1100, 1000);
   background(#FFEBCD);
   smooth();
 
@@ -37,13 +37,13 @@ void draw()
 
   drawTrace();
   
-  showI();
+  showInfo();
 }
 
 void wantupdata()    //test _i and update data and _i
 {
   if (!haveNoPx) return;
-  if (rangechange)                              //if (_i<0 || (_i>theLong-_show)) //if _i out of range
+  if (rangechange || theStart+_i+_show>theEnd)                              //if (_i<0 || (_i>theLong-_show)) //if _i out of range
   {
       println(_i);
       notTraceChange=true;
@@ -56,14 +56,27 @@ void wantupdata()    //test _i and update data and _i
   }
 }
 
-void showI()
+void showInfo()
 {
   int x=100, y=100-16;
   fill(255);
   rect(x, y, 50, 15);
   fill(0);
   textSize(10);
-  text(" _i= "+_i, x, y+13);         
+  text(" _i= "+_i, x, y+13);
+
+  fill(#ADFF2F);
+  rect(0+5, 200, 10, 10);
+  fill(#778899);
+  rect(10+5, 200, 10, 10);
+  fill(#FFA500);
+  rect(20+5, 200, 10, 10);
+  fill(0);
+  textSize(5);
+  //textAlign(CENTER);
+  text("X", 5, 205, 10, 10); 
+  text("L", 15, 205, 10, 10);  
+  text("D", 25, 205, 10, 10);          
 }
 
 //the move line
@@ -74,8 +87,13 @@ void drawTrace()
     if ((mouseX>=theTrap[i].r[0] && mouseX<=theTrap[i].r[0]+theTrap[i].r[2])&&(mouseY>=theTrap[i].r[1] && mouseY<=theTrap[i].r[1]+theTrap[i].r[3]))
     {
       var x = theTrap[i].r[0], y = theTrap[i].r[1], w = theTrap[i].r[2], h = theTrap[i].r[3];
+      stroke(0);
+      strokeWeight(2);
+      noFill();
+      rect(x, y, w, h);
+      
       var k1=theTrap[i].s.length*7;
-      if (k1<80) k1=80;
+      if (k1<100) k1=100;
       var k2=-k1;
       if (mouseX>1100-k1) k1=0;
         
@@ -97,7 +115,7 @@ void drawTrace()
       haveNoPx=false;
     }
     stroke(0, 100);
-    strokeWeight(1);
+    strokeWeight(0.5);
     line(mouseX, 0, mouseX, 200);
     fill(255);
     if (mouseX<1000)
@@ -405,14 +423,14 @@ void drawPart1()
           line(x, y-10, x, y);
           fill(0);
           textSize(10);
-          text(_i+theStart+((x-100)/k), x+3, y);
+          text((int)(_i+theStart+((x-100)/_PIXLEN)), x+3, y);
         }
         if ((int)x%50==0 && (int)x%100!=0)
         {
           line(x, y, x, y+10);
           fill(0);
           textSize(10);
-          text(_i+theStart+((x-100)/k), x+3, y+10);
+          text((int)(_i+theStart+((x-100)/_PIXLEN)), x+3, y+10);
         }
         x += 50;
     }
@@ -443,7 +461,12 @@ void drawPart2()
   {
       float t = map(abs(theV[_i+i]), 0, maxV, 0, 50);
       noStroke();
-      fill(#00BFFF);
+      if (t<50/3)
+      fill(158,202,225);
+      else if(t<50/3*2)
+      fill(107,174,214);
+      else
+      fill(49,130,189);
       if (theV[_i+i]>=0)
       {
         rect(x, y-t, _k, t); 
@@ -629,7 +652,7 @@ void drawPart4()
           {
             int p = level[m][n].n+l;
             int ff = theTrap[p].r[0], ww = theTrap[p].r[2];
-            if ((tf<=ff)&&(ff<=tf+tw) || (tf<=ff+ww)&&(ff+ww<=tf+tw))
+            if ((tf<=ff)&&(ff<=tf+tw) || (tf<=ff+ww)&&(ff+ww<=tf+tw) || ((ff<=tf)&&(tf<=ff+ww)) || ((ff<=tf+tw)&&(tf+tw<=ff+ww)))
             {
               pp = 0;
               break;
@@ -663,6 +686,11 @@ void drawPart4()
 
   float wy=(level.length)*15, ly = nextY, k=15;
   if (wy<100) wy=100;
+  if (level.length>30)
+  {
+    k = 450/level.length;
+    wy = 450;
+  }
   float o = max((k-10)/2, k/5);
   stroke(0);        //set the content box
   strokeWeight(0.5);
@@ -697,7 +725,7 @@ void drawPart4()
       rect(tf, ly+k*ii+o, tw, k-2*o);
       theTrap[i].r[1]=ly+k*ii+o;
       theTrap[i].r[3]= k-2*o;
-      if (abs(tw)-2*o>0)
+      if (abs(tw)-2*o<=0 || wy==450) continue;
       drawDir(mark, tf, tf+tw, ly+(ii+1)*k-o, k, o);
 
     }
