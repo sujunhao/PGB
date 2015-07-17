@@ -472,12 +472,13 @@ void drawPart3()
   rect(0, ly, 100, wy);
 
   noStroke();
+  textSize(10);
+  textAlign(RIGHT)
+  fill(100);
+  text(theEsId, 5, ly+wy/2, 80, 40);
   for (var i=0; i<theEs.length; i++)
   {
 
-    // textSize(k-2*o);
-    // fill(100);
-    // text(theEs[i].id, 0, ly+(i+1)*k-o);
 
     var f = theEs[i].f, t = theEs[i].t;
     if (theEs[i].t <= theStart+_i) continue;
@@ -601,6 +602,11 @@ void drawPart4()
   rect(0, ly, 100, wy);
 
   noStroke();
+  textSize(10);
+  textAlign(RIGHT)
+  fill(100);
+  text(theRsId, 5, ly+wy/2, 80, 40);
+  
   for(int m=0; m<level.length; m++)
   {
     for (int n=0; n<level[m].length; n++)
