@@ -31,6 +31,7 @@ void draw()
   drawPart1();  
   drawPart2();
   nextY = 200;
+  while(theTrap.length != 0) theTrap.pop();  //delete theTrap array in order to update
   drawPart3();
   drawPart4(); //theRs
 
@@ -51,7 +52,6 @@ void wantupdata()    //test _i and update data and _i
       _i=0;
       theAdd=true;
       rangechange = false;
-      while(theTrap.length != 0) theTrap.pop();  //delete theTrap array in order to update
       update();
   }
 }
@@ -459,10 +459,11 @@ void drawDir(String s, float x1, float x2, float y, int k, int o)
 
 void drawPart3()
 {
-  float k, wy=200, ly = nextY;
-  if (theEs.length<=6) wy  = 100;
+  float k, wy=theEs.length*15, ly = nextY;
+  if (wy<100) wy=100;
+  //if (theEs.length<=6) wy  = 100;
 
-  k = wy/(theEs.length); //the gene can fill height
+  k = wy/theEs.length; //the gene can fill height
   float o = max((k-10)/2, k/5);
   stroke(0);
   strokeWeight(0.5);
@@ -591,6 +592,7 @@ void drawPart4()
   }
 
   float wy=(level.length)*15, ly = nextY, k=15;
+  if (wy<100) wy=100;
   float o = max((k-10)/2, k/5);
   stroke(0);        //set the content box
   strokeWeight(0.5);
