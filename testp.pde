@@ -107,7 +107,12 @@ void drawTrace()
       fill(0);
       textSize(10);
       text((int)((mouseX-100)/(_PIXLEN)+_i+theStart), mouseX+5, 22.5);
+      if (_show<=1500)
       text(theV[(int)((mouseX-100)/(_PIXLEN)+_i)], mouseX+5, 122.5);
+      else
+      {
+        text(theV[(int)((mouseX-100)/((width-100)/1500)+_i)], mouseX+5, 122.5);
+      }
     }
     else
     {
@@ -116,7 +121,12 @@ void drawTrace()
       fill(0);
       textSize(10);
       text((int)((mouseX-100)/(_PIXLEN)+_i+theStart), mouseX-100+5, 22.5);
+      if (_show<=1500)
       text(theV[(int)((mouseX-100)/(_PIXLEN)+_i)], mouseX-100+5, 122.5);
+      else
+        {
+          text(theV[(int)((mouseX-100)/((width-100)/1500)+_i)], mouseX-100+5, 122.5);
+        }
     }
   }
 }
@@ -127,9 +137,11 @@ void keyPressed()
   //define keypresses up down right left
    if (key == CODED) {
     if (keyCode == RIGHT) {
-      _i = _i+1;
+      if(theStart+_i+_show<theLength)
+        _i = _i+1;
     } else if (keyCode == LEFT) {
-      _i = _i-1;
+      if (theStart>0)
+        _i = _i-1;
     } else if(keyCode ==UP){
       float k = _PIXLEN;
       switch(_show)
