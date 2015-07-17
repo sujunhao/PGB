@@ -532,6 +532,7 @@ void drawPart3()
 void drawPart4()
 {
   while(level.length!=0) level.pop();
+
   int l = theTrap.length;
   for (int i=0; i<theRs.length; i++)   //how many Rs tags
   {
@@ -546,13 +547,16 @@ void drawPart4()
         
         float tf = 100+abs(f-theStart-_i)*_PIXLEN, tw = abs(t-f+1)*_PIXLEN;
 
+        var w = new LevelNode();
+        w.c=theRs[i].s;
+
         int getl=0;
         for (int m=0; m<level.length; m++)
         {
           int pp=1;
           for (int n=0; n<level[m].length; n++)
           {
-            int p = level[m][n];
+            int p = level[m][n].n+l;
             int ff = theTrap[p].r[0], ww = theTrap[p].r[2];
             if ((tf<=ff)&&(ff<=tf+tw) || (tf<=ff+ww)&&(ff+ww<=tf+tw))
             {
@@ -562,7 +566,8 @@ void drawPart4()
           }
           if (pp==1)
           {
-            level[m].push(theTrap.length-l);
+            w.n = theTrap.length-l;
+            level[m].push(w);
             getl=1;
             break;
           }
@@ -570,8 +575,9 @@ void drawPart4()
 
         if (getl==0)
         {
-          var k = [];
-          k.push(theTrap.length-l);
+          k = CreateArray();
+          w.n = theTrap.length-l;
+          k.push(w);
           level.push(k);
         }
         
@@ -592,7 +598,7 @@ void drawPart4()
     
   }
 
-  float wy=(level.length+1)*15, ly = nextY, k=15;
+  float wy=(level.length)*15, ly = nextY, k=15;
   float o = max((k-10)/2, k/5);
   stroke(0);        //set the content box
   strokeWeight(0.5);
@@ -605,17 +611,24 @@ void drawPart4()
   {
     for (int n=0; n<level[m].length; n++)
     {
-      int i=level[m][n];
+      int i=level[m][n].n;
       int tf = theTrap[i].r[0], tw = theTrap[i].r[2];
       ii = m;
+
+      String mark = "<";
+      fill(col[0]);
+      if (level[m][n].c==1){
+        mark = ">";
+        fill(col[1]);
+      }
 
       stroke(25);
       strokeWeight(0.5);
       rect(tf, ly+k*ii+o, tw, k-2*o);
       theTrap[i].r[1]=ly+k*ii+o;
       theTrap[i].r[3]= k-2*o;
-      // if (abs(tw)-2*o>0)
-      // drawDir(mark, tf, tf+tw, ly+(ii+1)*k-o, k, o);
+      if (abs(tw)-2*o>0)
+      drawDir(mark, tf, tf+tw, ly+(ii+1)*k-o, k, o);
 
     }
   }

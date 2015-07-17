@@ -77,7 +77,16 @@ function Trap(){
 }
 
 var level = [];
+function CreateArray()
+{
+    var k = [];
+    return k;
+}
 
+function LevelNode(){
+    this.c = 1;
+    this.n = 1;
+}
 update = function() {
     if (theAdd) {
         document.getElementById("p2").value = param2;
