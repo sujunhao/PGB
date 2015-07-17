@@ -441,9 +441,11 @@ void drawPart2()
 
   
   //line(width/10, height/8/2, width, height/8/2);
+  noStroke();
   textSize(10);
+  textAlign(RIGHT)
   fill(100);
-  text((theValueId), 0, 150, 90, 60);
+  text(theValueId, 5, 100+100/2, 80, 40);
 }
 
 
@@ -454,83 +456,133 @@ void drawDir(String s, float x1, float x2, float y, int k, int o)
   text(s, x1, y);
   text(s, x2-(k-2*o), y);
 }
-
-
-
 void drawPart3()
 {
-  float k, wy=theEs.length*15, ly = nextY;
-  if (wy<100) wy=100;
-  //if (theEs.length<=6) wy  = 100;
+  while(level.length!=0) level.pop();
 
-  k = wy/theEs.length; //the gene can fill height
+  int l = 0;
+  for (int i=0; i<theEs.length; i++)   //how many Rs tags
+  {
+
+    int f = theEs[i].f, t = theEs[i].t;
+    if (t <= theStart+_i) continue;
+    if (f >= theStart+_i+_show) continue;
+      
+    if (f<theStart+_i) f = theStart+_i;
+    if (t>theStart+_i+_show) t=theStart+_i+_show;
+      
+    float tf = 100+abs(f-theStart-_i)*_PIXLEN, tw = abs(t-f+1)*_PIXLEN;
+
+    var w = new LevelNode();
+    w.c=theEs[i].s;
+
+    int getl=0;
+    for (int m=0; m<level.length; m++)
+    {
+      int pp=1;
+      for (int n=0; n<level[m].length; n++)
+      {
+        int p = level[m][n].n;
+        int ff = theTrap[p].r[0], ww = theTrap[p].r[2];
+        if ((tf<=ff)&&(ff<=tf+tw) || (tf<=ff+ww)&&(ff+ww<=tf+tw))
+        {
+          pp = 0;
+          break;
+        }
+      }
+      if (pp==1)
+      {
+        w.n = i;
+        level[m].push(w);
+        getl=1;
+        break;
+      }
+    }
+
+    if (getl==0)
+    {
+      k = CreateArray();
+      w.n = i;
+      k.push(w);
+      level.push(k);
+    }
+      
+    var rr = new Array(tf, 0, tw, 0);
+    var p = new Trap();
+    p.r = rr;
+    p.s = theEs[i].id;
+    theTrap.push(p);   
+  }
+
+  float wy=(level.length)*15, ly = nextY, k=15;
+  if (wy<100) wy=100;
   float o = max((k-10)/2, k/5);
-  stroke(0);
+  stroke(0);        //set the content box
   strokeWeight(0.5);
-  fill(#FFEBCD); //color of part_1
-  rect(0, ly, 1100, wy); //part_1
+  fill(#FFEBCD); 
+  rect(0, ly, 1100, wy); 
   rect(0, ly, 100, wy);
 
+  //show ID
   noStroke();
   textSize(10);
   textAlign(RIGHT)
   fill(100);
   text(theEsId, 5, ly+wy/2, 80, 40);
-  for (var i=0; i<theEs.length; i++)
+  
+  for(int m=0; m<level.length; m++)
   {
-
-
-    var f = theEs[i].f, t = theEs[i].t;
-    if (theEs[i].t <= theStart+_i) continue;
-    if (theEs[i].f >= theStart+_i+_show) continue;
-    if (f<theStart+_i) f = theStart+_i;
-    if (t>theStart+_i+_show) t=theStart+_i+_show;
-
-    var rr = new Array(100+abs(f-theStart-_i)*_PIXLEN, ly+k*i+o, abs(t-f+1)*_PIXLEN, k-2*o);
-    var p = new Trap();
-    p.r = rr;
-    p.s = theEs[i].id;
-    theTrap.push(p);
-
-      
-    String mark = "<";
-    if (theEs[i].s == 1) mark = ">";
-    for (var j=0; j<theEs[i].S.length; j++)
+    for (int n=0; n<level[m].length; n++)
     {
-      f = theEs[i].S[j].f;
-      t = theEs[i].S[j].t;
-      if (f<theStart+_i) f = theStart+_i;
-      if (t>theStart+_i+_show) t=theStart+_i+_show;
-      switch(theEs[i].S[j].y) //XLD 012
+      int i=level[m][n].n;
+
+
+      int tf = theEs[i].f, tw = theEs[i].t;
+      ii = m;
+
+      String mark = "<";
+      if (level[m][n].c==1){
+        mark = ">";
+      }
+
+      theTrap[i].r[1]=ly+k*ii+o;
+      theTrap[i].r[3]= k-2*o;
+
+      stroke(25);
+      strokeWeight(0.5);
+      for (var j=0; j<theEs[i].S.length; j++)
       {
-          case 0:
-              fill(#ADFF2F);
-              rect(100+abs(f-theStart-_i)*_PIXLEN, ly+k*i+o, abs(t-f+1)*_PIXLEN, k-2*o);
-              if (abs(t-f)*_PIXLEN>k-2*o)
-              drawDir(mark, 100+abs(f-theStart-_i)*_PIXLEN, 100+abs(t-theStart-_i)*_PIXLEN, ly+(i+1)*k-o, k, o);
-              break;
-          case 1:
-              fill(#778899);
-              rect(100+abs(f-theStart-_i)*_PIXLEN, ly+k*i+o, abs(t-f+1)*_PIXLEN, k-2*o);
-              break;
-          case 2:
-              fill(#FFA500);
-              rect(100+abs(f-theStart-_i)*_PIXLEN, ly+k*i+o, abs(t-f+1)*_PIXLEN, k-2*o);
-              if (abs(t-f)*_PIXLEN>k-2*o)
-              drawDir(mark, 100+abs(f-theStart-_i)*_PIXLEN, 100+abs(t-theStart-_i)*_PIXLEN, ly+(i+1)*k-o, k, o);
-              break;
-          default:
-              break;
+        f = theEs[i].S[j].f;
+        t = theEs[i].S[j].t;
+        if (f<theStart+_i) f = theStart+_i;
+        if (t>theStart+_i+_show) t=theStart+_i+_show;
+        switch(theEs[i].S[j].y) //XLD 012
+        {
+            case 0:
+                fill(#ADFF2F);
+                rect(100+abs(f-theStart-_i)*_PIXLEN, ly+k*ii+o, abs(t-f+1)*_PIXLEN, k-2*o);
+                if (abs(t-f)*_PIXLEN>k-2*o)
+                drawDir(mark, 100+abs(f-theStart-_i)*_PIXLEN, 100+abs(t-theStart-_i)*_PIXLEN, ly+(ii+1)*k-o, k, o);
+                break;
+            case 1:
+                fill(#778899);
+                rect(100+abs(f-theStart-_i)*_PIXLEN, ly+k*ii+o, abs(t-f+1)*_PIXLEN, k-2*o);
+                break;
+            case 2:
+                fill(#FFA500);
+                rect(100+abs(f-theStart-_i)*_PIXLEN, ly+k*ii+o, abs(t-f+1)*_PIXLEN, k-2*o);
+                if (abs(t-f)*_PIXLEN>k-2*o)
+                drawDir(mark, 100+abs(f-theStart-_i)*_PIXLEN, 100+abs(t-theStart-_i)*_PIXLEN, ly+(ii+1)*k-o, k, o);
+                break;
+            default:
+                break;
+        }
       }
     }
-
-    
   }
   nextY += wy;
 }
-
-
-
+  
 void drawPart4()
 {
   while(level.length!=0) level.pop();
@@ -601,6 +653,7 @@ void drawPart4()
   rect(0, ly, 1100, wy); 
   rect(0, ly, 100, wy);
 
+  //show ID
   noStroke();
   textSize(10);
   textAlign(RIGHT)
