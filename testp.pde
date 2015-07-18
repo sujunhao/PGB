@@ -49,6 +49,23 @@ void wantupdata()    //test _i and update data and _i
       notTraceChange=true;
       param2 = (int)((int)param2 + (int)_i);
       param3 = (int)((int)param2 + (int)_i + _show);
+
+      if (param2<1 && param3>theLength) //if query out of the chromosome length set border to 1 to theLength
+      {
+        _show += ((param2-1)+(theLength-param3));
+        param2=1;
+        param3=theLength;
+      }
+      else if (param3>theLength)
+      {
+        _show += (theLength-param3);
+        param3=theLength;
+      }
+      else if (param2<1)
+      {
+        _show += (param2-1);
+        param2=1;
+      }
       _i=0;
       theAdd=true;
       rangechange = false;
