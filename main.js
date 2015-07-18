@@ -21,14 +21,15 @@ var param1, param2, param3; //keep html receive value
 
 var data;  //this is a xml include all receive data
 
-var theChromosome, theStart, theEnd, theLength, theSequence, theValueId, theStep;
+var theChromosome, theStart, theEnd, theLength;
+//var theSequence, theValueId;
 var theLong; //theEnd-theStart;
-var theV = new Array();  //the value array
-var maxV = 0;            //max number of the value array
-var theRsId, theEsId, theVsId;
-var theRs = new Array();
-var theEs = new Array();
-var theVs = new Array();
+//var theV = new Array();  //the value array //-
+var maxV = [];            //max number of the value array 
+//var theRsId, theEsId, theVsId; //-
+// var theRs = new Array(); //-
+// var theEs = new Array(); //-
+// var theVs = new Array(); //-
 
 var theAdd = false;  //if processing want js to update
 
@@ -36,7 +37,29 @@ var theAdd = false;  //if processing want js to update
 var notTraceChange=false;  //if the Add is true ,let processing no trace change
 
 
+//theRsL is a array include all Rs node, and each have id and it's RS array
+var theValueL = [], theRsL = [], theEsL = [], theVsL = [];
 
+function ValueNode(){
+    this.id = "";
+    this.step = 1;
+    this.s = [];
+}
+
+function RsNode(){
+    this.id = "";
+    this.theRs = [];
+}
+
+function EsNode(){
+    this.id = "";
+    this.theEs = [];
+}
+
+function VsNode(){
+    this.id = "";
+    this.theVs = [];
+}
 function ES() {
     this.id = '';
     this.f = 1;
@@ -87,6 +110,7 @@ function LevelNode(){
     this.c = 1;
     this.n = 1;
 }
+
 update = function() {
     if (theAdd) {
         document.getElementById("p2").value = param2;
@@ -112,6 +136,22 @@ function getReadyStateHandler() {
         if (req.status == 200) {
             data = req.responseXML.firstChild.childNodes;
 
+
+
+            // while(theValueL.length!=0) theValueL.pop();
+            // while(theRsL.length!=0) theRsL.pop();
+            // while(theEsL.length!=0) theEsL.pop();
+            // while(theVsL.length!=0) theVsL.pop();
+
+            theValueL = [];
+            theRsL = [];
+            theEsL = [];
+            theVsL = [];
+
+           // while(theRs.length != 0) theRs.pop();
+           // while(theVs.length != 0) theVs.pop();
+           // while(theEs.length != 0) theEs.pop();
+
             for (var i = 0; i < data.length; i++) {
                 switch (data[i].nodeName) {
                     case "Chromosome":
@@ -127,47 +167,65 @@ function getReadyStateHandler() {
                         theLength = parseInt(data[i].innerHTML);
                         break;
                     case "Sequence":
+                        if (data[i].getAttribute('id')=="Reference")
                         theSequence = data[i].innerHTML;
                         break;
                     case "Values":
-                        theValueId = data[i].getAttribute('id');
-                        theStep = parseInt(data[i].childNodes[2].innerHTML);
-                        var kk = (data[i].childNodes[3].innerHTML).split(';');
-                        maxV = 0;
-                        for (var j = 0; j < kk.length; j++) {
-                            theV[j] = parseFloat(kk[j]);
-                            maxV = Math.max(maxV, Math.abs(theV[j]));
+                        var vd = new ValueNode();
+                        vd.id = data[i].getAttribute('id');
+                        for (var k=0; k<data[i].childNodes.length; k++)
+                        {
+                            switch (data[i].childNodes[k].nodeName)
+                            {
+                                case 'Step':
+                                    vd.step = parseInt(data[i].childNodes[k].innerHTML);
+                                    break;
+                                case 'ValueList':
+                                    var kk = (data[i].childNodes[3].innerHTML).split(';');
+                                    var thev = [];
+                                    maxV[theValueL.length] = 0;
+                                    for (var j = 0; j < kk.length; j++) {
+                                        thev.push(parseFloat(kk[j]));
+                                        maxV[theValueL.length] = Math.max(maxV[theValueL.length], Math.abs(thev[j]));
+                                    }
+                                    vd.s = thev;
+                                    break;
+                                default:
+                                    break;
+
+                            }
                         }
+                        theValueL.push(vd);
                         break;
 
                     case "Rs":
-                        theRsId = data[i].getAttribute('id');
-                        while(theRs.length != 0) theRs.pop();
+                        var rd = new RsNode();
+                        rd.id = data[i].getAttribute('id');
                         for (var j = 0; j < data[i].childNodes.length; j++) {
-                            theRs[j] = new RS();
-                            theRs[j].id = data[i].childNodes[j].getAttribute('id');
+                            rd.theRs[j] = new RS();
+                            rd.theRs[j].id = data[i].childNodes[j].getAttribute('id');
                             for (var k = 0; k < data[i].childNodes[j].childNodes.length; k++) {
                                 var node = data[i].childNodes[j].childNodes[k];
                                 switch (node.nodeName) {
                                     case 'F':
                                         var ss = node.innerHTML.split(',');
                                         for (var o = 0; o < ss.length; o++) {
-                                            theRs[j].f[o] = parseInt(ss[o]);
+                                            rd.theRs[j].f[o] = parseInt(ss[o]);
                                         }
                                         break;
                                     case 'T':
                                         var ss = node.innerHTML.split(',');
                                         for (var o = 0; o < ss.length; o++) {
-                                            theRs[j].t[o] = parseInt(ss[o]);
+                                            rd.theRs[j].t[o] = parseInt(ss[o]);
                                         }
                                         break;
                                     case 's':
                                         if (node.innerHTML == '+') {
-                                            theRs[j].s = 1;
-                                        } else theRs[j].s = 0;
+                                            rd.theRs[j].s = 1;
+                                        } else rd.theRs[j].s = 0;
                                         break;
                                     case 'Mapq':
-                                        theRs[j].m = parseInt(node.innerHTML);
+                                        rd.theRs[j].m = parseInt(node.innerHTML);
                                         break;
 
                                     default:
@@ -175,54 +233,56 @@ function getReadyStateHandler() {
                                 }
                             }
                         }
-
+                        theRsL.push(rd);
                         break;
                     case "Vs":
-                        theVsId = data[i].getAttribute('id');
-                        while(theVs.length != 0) theVs.pop();
+                        var vd= new VsNode();
+                        vd.id = data[i].getAttribute('id');
+                        
                         for (var j = 0; j < data[i].childNodes.length; j++) {
-                            theVs[j] = new VS();
-                            theVs[j].id = data[i].childNodes[j].getAttribute('id');
-                            theVs[j].y = data[i].childNodes[j].getAttribute('Y');
+                            vd.theVs[j] = new VS();
+                            vd.theVs[j].id = data[i].childNodes[j].getAttribute('id');
+                            vd.theVs[j].y = data[i].childNodes[j].getAttribute('Y');
                             for (var k = 0; k < data[i].childNodes[j].childNodes.length; k++) {
                                 var node = data[i].childNodes[j].childNodes[k];
                                 switch (node.nodeName) {
                                     case 'F':
-                                        theVs[j].f = parseInt(node.innerHTML);
+                                        vd.theVs[j].f = parseInt(node.innerHTML);
                                         break;
                                     case 'T':
-                                        theVs[j].t = parseInt(node.innerHTML);
+                                        vd.theVs[j].t = parseInt(node.innerHTML);
                                         break;
                                     case 'B':
-                                        theVs[j].b = (node.innerHTML);
+                                        vd.theVs[j].b = (node.innerHTML);
                                         break;
                                     default:
                                         break;
                                 }
                             }
                         }
-
+                        theVsL.push(vd);
                         break;
 
                     case "Es":
-                        theEsId = data[i].getAttribute('id');
-                        while(theEs.length != 0) theEs.pop();
+                        var ed = new EsNode();
+                        ed.id = data[i].getAttribute('id');
+                        
                         for (var j = 0; j < data[i].childNodes.length; j++) {
-                            theEs[j] = new ES();
-                            theEs[j].id = data[i].childNodes[j].getAttribute('id');
+                            ed.theEs[j] = new ES();
+                            ed.theEs[j].id = data[i].childNodes[j].getAttribute('id');
                             for (var k = 0; k < data[i].childNodes[j].childNodes.length; k++) {
                                 var node = data[i].childNodes[j].childNodes[k];
                                 switch (node.nodeName) {
                                     case 'F':
-                                        theEs[j].f = parseInt(node.innerHTML);
+                                        ed.theEs[j].f = parseInt(node.innerHTML);
                                         break;
                                     case 'T':
-                                        theEs[j].t = parseInt(node.innerHTML);
+                                        ed.theEs[j].t = parseInt(node.innerHTML);
                                         break;
                                     case 's':
                                         if (node.innerHTML == '+') {
-                                            theEs[j].s = 1;
-                                        } else theEs[j].s = 0;
+                                            ed.theEs[j].s = 1;
+                                        } else ed.theEs[j].s = 0;
                                         break;
                                     case 'S':
                                         var tmp = new SS();
@@ -250,7 +310,7 @@ function getReadyStateHandler() {
                                                     break;
                                             }
                                         }
-                                        theEs[j].S.push(tmp);
+                                        ed.theEs[j].S.push(tmp);
 
                                         break;
 
@@ -260,6 +320,7 @@ function getReadyStateHandler() {
                             }
                         }
 
+                        theEsL.push(ed);
                         break; //end Es
                     default:
                         break;

@@ -29,11 +29,23 @@ void draw()
 
 
   drawPart1();  
-  drawPart2();
-  nextY = 200;
+  nextY=100;      //value part draw form y=100
+  for (int i=0; i<theValueL.length; i++)
+  {
+    drawPart2(i);
+  }
+
   while(theTrap.length != 0) theTrap.pop();  //delete theTrap array in order to update
-  drawPart3();
-  drawPart4(); //theRs
+
+  for (int i=0; i<theEsL.length; i++) //draw Es
+  {
+    drawPart3(i);
+  }
+  
+  for (int i=0; i<theRsL.length; i++)
+  {
+    drawPart4(i); //theRs
+  }
 
   drawTrace();
   
@@ -45,7 +57,7 @@ void wantupdata()    //test _i and update data and _i
   if (!haveNoPx) return;
   if (rangechange || theStart+_i+_show>theEnd)                              //if (_i<0 || (_i>theLong-_show)) //if _i out of range
   {
-      println(_i);
+      //println(_i);
       notTraceChange=true;
       param2 = (int)((int)param2 + (int)_i);
       param3 = (int)((int)param2 + (int)_i + _show);
@@ -80,20 +92,7 @@ void showInfo()
   rect(x, y, 50, 15);
   fill(0);
   textSize(10);
-  text(" _i= "+_i, x, y+13);
-
-  fill(#ADFF2F);
-  rect(0+5, 200, 10, 10);
-  fill(#778899);
-  rect(10+5, 200, 10, 10);
-  fill(#FFA500);
-  rect(20+5, 200, 10, 10);
-  fill(0);
-  textSize(5);
-  //textAlign(CENTER);
-  text("X", 5, 205, 10, 10); 
-  text("L", 15, 205, 10, 10);  
-  text("D", 25, 205, 10, 10);          
+  text(" _i= "+_i, x, y+13);       
 }
 
 //the move line
@@ -124,7 +123,8 @@ void drawTrace()
     }
   }
   if (notTraceChange) return;
-  if ((100<mouseX && mouseX<1100) && (mouseY>0) && (mouseY<200))
+  int len = theValueL.length;
+  if ((100<mouseX && mouseX<1100) && (mouseY>0) && (mouseY<100+100*len))
   {
     if (mousePressed && haveNoPx) //if mouse press and can trace mouserelease  mark the mouseX and turn off trace
     {
@@ -133,35 +133,44 @@ void drawTrace()
     }
     stroke(0, 100);
     strokeWeight(0.5);
-    line(mouseX, 0, mouseX, 200);
+    line(mouseX, 0, mouseX, 100+100*len);
     fill(255);
-    if (mouseX<1000)
+    if (mouseX<=1000)
     {
       rect(mouseX, 10, 100, 15);
-      rect(mouseX, 110, 100, 15);
+      for (int i=0; i<len; i++)
+      {
+        rect(mouseX, 100*(i+1)+10, 100, 15);
+      }
       fill(0);
       textSize(10);
       text((int)((mouseX-100)/(_PIXLEN)+_i+theStart), mouseX+5, 22.5);
+      int pp=(int)((mouseX-100)/((width-100)/1500)+_i);
       if (_show<=1500)
-      text(theV[(int)((mouseX-100)/(_PIXLEN)+_i)], mouseX+5, 122.5);
-      else
+        pp=(int)((mouseX-100)/(_PIXLEN)+_i);
+      for (int i=0; i<len; i++)
       {
-        text(theV[(int)((mouseX-100)/((width-100)/1500)+_i)], mouseX+5, 122.5);
+         text(theValueL[i].s[pp], mouseX+5, 100*(i+1)+22.5);
       }
     }
     else
     {
       rect(mouseX-100, 10, 100, 15);
-      rect(mouseX-100, 110, 100, 15);
+      for (int i=0; i<len; i++)
+      {
+        rect(mouseX-100, 100*(i+1)+10, 100, 15);
+      }
       fill(0);
       textSize(10);
       text((int)((mouseX-100)/(_PIXLEN)+_i+theStart), mouseX-100+5, 22.5);
+      int pp=(int)((mouseX-100)/((width-100)/1500)+_i);
       if (_show<=1500)
-      text(theV[(int)((mouseX-100)/(_PIXLEN)+_i)], mouseX-100+5, 122.5);
-      else
-        {
-          text(theV[(int)((mouseX-100)/((width-100)/1500)+_i)], mouseX-100+5, 122.5);
-        }
+        pp=(int)((mouseX-100)/(_PIXLEN)+_i);
+
+      for (int i=0; i<len; i++)
+      {
+         text(theValueL[i].s[pp], mouseX-100+5, 100*(i+1)+22.5);
+      }
     }
   }
 }
@@ -458,17 +467,17 @@ void drawPart1()
   text(theChromosome, 5, width/10/2);
 }
 
-void drawPart2()
+void drawPart2(int j)
 {
   stroke(0);
   strokeWeight(0.5);
   fill(#FFEBCD); //color of part_1
-  rect(0, 100, 1100, 100); //part_1
-  rect(0, 100, 100, 100);
+  rect(0, nextY, 1100, 100); //part_1
+  rect(0, nextY, 100, 100);
 
-  line(100, 150, 1100, 150);
+  line(100, nextY+50, 1100, nextY+50);
 
-  float x=100, y=50+100, k=_PIXLEN, t, __show=_show, _k=k;
+  float x=100, y=50+nextY, k=_PIXLEN, t, __show=_show, _k=k;
   if (_show>1500)
   {
     __show = 1500;
@@ -476,7 +485,8 @@ void drawPart2()
   }
   for (int i=0; i<__show; i++)
   {
-      float t = map(abs(theV[_i+i]), 0, maxV, 0, 50);
+      float vv = theValueL[j].s[_i+i];
+      float t = map(abs(vv), 0, maxV[j], 0, 50);
       noStroke();
       if (t<50/3)
       fill(158,202,225);
@@ -484,7 +494,7 @@ void drawPart2()
       fill(107,174,214);
       else
       fill(49,130,189);
-      if (theV[_i+i]>=0)
+      if (vv>=0)
       {
         rect(x, y-t, _k, t); 
       }
@@ -502,7 +512,9 @@ void drawPart2()
   textSize(10);
   textAlign(RIGHT)
   fill(100);
-  text(theValueId, 5, 100+100/2, 80, 40);
+  text(theValueL[j].id, 5, nextY+100/2, 80, 40);
+
+  nextY+=100;
 }
 
 
@@ -513,15 +525,17 @@ void drawDir(String s, float x1, float x2, float y, int k, int o)
   text(s, x1, y);
   text(s, x2-(k-2*o), y);
 }
-void drawPart3()
-{
-  while(level.length!=0) level.pop();
 
-  int l = 0;
-  for (int i=0; i<theEs.length; i++)   //how many Rs tags
+
+void drawPart3(int z)
+{
+  //while(level.length!=0) level.pop(); //tmp just to keep level info to define how to draw
+  level = [];
+  int l = theTrap.length;  
+  for (int i=0; i<theEsL[z].theEs.length; i++)   //how many Es tags
   {
 
-    int f = theEs[i].f, t = theEs[i].t;
+    int f = theEsL[z].theEs[i].f, t = theEsL[z].theEs[i].t;
     if (t <= theStart+_i) continue;
     if (f >= theStart+_i+_show) continue;
       
@@ -531,7 +545,7 @@ void drawPart3()
     float tf = 100+abs(f-theStart-_i)*_PIXLEN, tw = abs(t-f+1)*_PIXLEN;
 
     var w = new LevelNode();
-    w.c=theEs[i].s;
+    w.c=theEsL[z].theEs[i].s;
 
     int getl=0;
     for (int m=0; m<level.length; m++)
@@ -539,9 +553,9 @@ void drawPart3()
       int pp=1;
       for (int n=0; n<level[m].length; n++)
       {
-        int p = level[m][n].n;
+        int p = level[m][n].n+l;
         int ff = theTrap[p].r[0], ww = theTrap[p].r[2];
-        if ((tf<=ff)&&(ff<=tf+tw) || (tf<=ff+ww)&&(ff+ww<=tf+tw))
+        if ((tf<=ff)&&(ff<=tf+tw) || (tf<=ff+ww)&&(ff+ww<=tf+tw) || ((ff<=tf)&&(tf<=ff+ww)) || ((ff<=tf+tw)&&(tf+tw<=ff+ww)))
         {
           pp = 0;
           break;
@@ -567,12 +581,17 @@ void drawPart3()
     var rr = new Array(tf, 0, tw, 0);
     var p = new Trap();
     p.r = rr;
-    p.s = theEs[i].id;
+    p.s = theEsL[z].theEs[i].id;
     theTrap.push(p);   
   }
 
   float wy=(level.length)*15, ly = nextY, k=15;
   if (wy<100) wy=100;
+  if (level.length>30)
+  {
+    k = 450/level.length;
+    wy = 450;
+  }
   float o = max((k-10)/2, k/5);
   stroke(0);        //set the content box
   strokeWeight(0.5);
@@ -585,7 +604,20 @@ void drawPart3()
   textSize(10);
   textAlign(RIGHT)
   fill(100);
-  text(theEsId, 5, ly+wy/2, 80, 40);
+  text(theEsL[z].id, 5, ly+wy/2, 80, 40);
+
+  fill(#ADFF2F);
+  rect(0+5, ly, 10, 10);
+  fill(#778899);
+  rect(10+5, ly, 10, 10);
+  fill(#FFA500);
+  rect(20+5, ly, 10, 10);
+  fill(0);
+  textSize(5);
+  //textAlign(CENTER);
+  text("X", 5, ly+5, 10, 10); 
+  text("L", 15, ly+5, 10, 10);  
+  text("D", 25, ly+5, 10, 10);   
   
   for(int m=0; m<level.length; m++)
   {
@@ -594,7 +626,7 @@ void drawPart3()
       int i=level[m][n].n;
 
 
-      int tf = theEs[i].f, tw = theEs[i].t;
+      int tf = theEsL[z].theEs[i].f, tw = theEsL[z].theEs[i].t;
       ii = m;
 
       String mark = "<";
@@ -602,18 +634,18 @@ void drawPart3()
         mark = ">";
       }
 
-      theTrap[i].r[1]=ly+k*ii+o;
-      theTrap[i].r[3]= k-2*o;
+      theTrap[i+l].r[1]=ly+k*ii+o;
+      theTrap[i+l].r[3]= k-2*o;
 
       stroke(25);
       strokeWeight(0.5);
-      for (var j=0; j<theEs[i].S.length; j++)
+      for (var j=0; j<theEsL[z].theEs[i].S.length; j++)
       {
-        f = theEs[i].S[j].f;
-        t = theEs[i].S[j].t;
+        f = theEsL[z].theEs[i].S[j].f;
+        t = theEsL[z].theEs[i].S[j].t;
         if (f<theStart+_i) f = theStart+_i;
         if (t>theStart+_i+_show) t=theStart+_i+_show;
-        switch(theEs[i].S[j].y) //XLD 012
+        switch(theEsL[z].theEs[i].S[j].y) //XLD 012
         {
             case 0:
                 fill(#ADFF2F);
@@ -640,16 +672,17 @@ void drawPart3()
   nextY += wy;
 }
   
-void drawPart4()
-{
-  while(level.length!=0) level.pop();
 
+void drawPart4(int z)
+{
+  //while(level.length!=0) level.pop();
+  level = [];
   int l = theTrap.length;
-  for (int i=0; i<theRs.length; i++)   //how many Rs tags
+  for (int i=0; i<theRsL[z].theRs.length; i++)   //how many Rs tags
   {
-    for (int j=0; j<theRs[i].f.length; j++)
+    for (int j=0; j<theRsL[z].theRs[i].f.length; j++)
     {
-        int f = theRs[i].f[j], t = theRs[i].t[j];
+        int f = theRsL[z].theRs[i].f[j], t = theRsL[z].theRs[i].t[j];
         if (t <= theStart+_i) continue;
         if (f >= theStart+_i+_show) continue;
         
@@ -659,7 +692,7 @@ void drawPart4()
         float tf = 100+abs(f-theStart-_i)*_PIXLEN, tw = abs(t-f+1)*_PIXLEN;
 
         var w = new LevelNode();
-        w.c=theRs[i].s;
+        w.c=theRsL[z].theRs[i].s;
 
         int getl=0;
         for (int m=0; m<level.length; m++)
@@ -695,7 +728,7 @@ void drawPart4()
         var rr = new Array(tf, 0, tw, 0);
         var p = new Trap();
         p.r = rr;
-        p.s = theRs[i].id;
+        p.s = theRsL[z].theRs[i].id;
         theTrap.push(p);
     }
     
@@ -720,7 +753,7 @@ void drawPart4()
   textSize(10);
   textAlign(RIGHT)
   fill(100);
-  text(theRsId, 5, ly+wy/2, 80, 40);
+  text(theRsL[z].id, 5, ly+wy/2, 80, 40);
   
   for(int m=0; m<level.length; m++)
   {
