@@ -5,8 +5,6 @@
     <title>PGB Test</title>
     <link rel="stylesheet" href="main.css"/>
     <script src="processing.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="main.js"></script>
     
     
@@ -18,16 +16,19 @@
 
     <ul>
         <li><span>chromosome</span><input id="p1" type="text" value="chr22"/></li>
-        <li><span>start</span><input id="p2" type="text" value="39917324"/></li>
-        <li><span>end</span><input id="p3" type="text" value="39918324"/></li>
+        <li><span>start</span><input id="p2" type="text" value="31363528"/></li>
+        <li><span>end</span><input id="p3" type="text" value="31364528"/></li>
         <li><button id="buttonn" onclick="update()">query</button></li>
     </ul>
 
+    
 
     <hr/>
     
+    <div><canvas data-processing-sources="testp.pde" id="can"></canvas>
+    </div>
 
-    <canvas data-processing-sources="testp.pde"></canvas>
+    <canvas data-processing-sources="testp.pde" id="can"></canvas>
     <div>
         <p>
             <div id="divv"></div>

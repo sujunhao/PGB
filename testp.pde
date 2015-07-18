@@ -12,7 +12,7 @@ color [] col = {color(78,238,148), color(112,202,238)};
 
 void setup()
 {
-  size(1100, 1000);
+  size(1100, 1200);
   background(#FFEBCD);
   smooth();
 
@@ -47,9 +47,13 @@ void draw()
     drawPart4(i); //theRs
   }
 
+  drawPart5(); //draw theVs tag
+
   drawTrace();
   
-  showInfo();
+  fill(#ffffe5);
+  rect(0, nextY, width, height-nextY);
+  //showInfo();
 }
 
 void wantupdata()    //test _i and update data and _i
@@ -131,9 +135,12 @@ void drawTrace()
       px = mouseX;
       haveNoPx=false;
     }
+    //draw trace Vs
+    drawVsTrace();
+
     stroke(0, 100);
     strokeWeight(0.5);
-    line(mouseX, 0, mouseX, 100+100*len);
+    line(mouseX, 0, mouseX, nextY);
     fill(255);
     if (mouseX<=1000)
     {
@@ -173,6 +180,68 @@ void drawTrace()
       }
     }
   }
+}
+
+void drawVsTrace()
+{
+  if (theVsL.length==0) return;
+  //set iscolor hh, ww, len , rr, ll
+  int f, t, rr, hh=10, len, yy;
+  float ww, ll;
+
+  if (_show<=1000)
+  iscolor = true;
+  
+  ww = _PIXLEN;
+  ll = theStart+_i;
+  rr = theStart+_i+_show;
+
+  
+  yy = 100 - hh -1;
+  
+  for (int z = 0; z < theVsL.length; z++)
+  {
+    for (int i = 0; i < theVsL[z].theVs.length; ++i) {
+        f = theVsL[z].theVs[i].f;
+        t = theVsL[z].theVs[i].t;
+        if (f>=ll)
+        {
+          if (t>rr) t = rr;
+          for (int j=f; j<=t; j++)
+          {
+            xx = _PIXLEN*(f-ll)+100;
+            if ((mouseX>=xx && mouseX<=xx+ww) && (mouseY>=yy) && (mouseY<=yy+hh))
+            {
+              String s = "f :" + f + " t: "+ " trackId: "+theVsL[z].id + " Id: " + theVsL[z].theVs[i].id + " Y: " +
+              theVsL[z].theVs[i].y + " B: " + 
+              theVsL[z].theVs[i].b;
+
+              var x = f, y = yy, w = 100, h = hh;
+              stroke(0);
+              strokeWeight(2);
+              noFill();
+              rect(x, y, w, h);
+              
+              var k1=s.length*7;
+              if (k1<100) k1=100;
+              var k2=-k1;
+              if (mouseX>1100-k1) k1=0;
+                
+              fill(255);
+              stroke(1, 100);
+              strokeWeight(1);
+              rect(mouseX+k1+k2, y - 15, -k2, 15);
+              fill(0);
+              textSize(10);
+              text(s, mouseX+k2+k1+5, y-3);
+              //console.log(s);
+            }
+          }
+        }   
+      }
+
+  }
+      
 }
 
 void keyPressed()
@@ -783,3 +852,95 @@ void drawPart4(int z)
   nextY += wy;
 }
 
+
+
+void drawPart5()
+{
+  if (theVsL.length==0) return;
+  //set iscolor hh, ww, len , rr, ll
+  boolean iscolor;
+  int f, t, rr, hh=10, len, yy;
+  String c;
+  float ww, ll;
+
+  if (_show<=1000)
+  iscolor = true;
+  
+  ww = _PIXLEN;
+  ll = theStart+_i;
+  rr = theStart+_i+_show;
+
+  
+  yy = 100 - hh -1;
+  
+  strokeWeight(1);
+  stroke(100, 0, 0, 100);
+  for (int z = 0; z < theVsL.length; z++)
+  {
+    for (int i = 0; i < theVsL[z].theVs.length; ++i) {
+        f = theVsL[z].theVs[i].f;
+        t = theVsL[z].theVs[i].t;
+        if (f>=ll)
+        {
+          if (t>rr) t = rr;
+          for (int j=f; j<=t; j++)
+          {
+            xx = _PIXLEN*(f-ll)+100;
+            if (iscolor)
+            {
+              //fill color and draw rect
+              switch(theVsL[z].theVs[i].b)
+              {
+                case str('A'):  
+                  fill(249,245,56);
+                  rect(xx, yy, ww, hh);
+                  fill(0);
+                  textSize(ww);
+                  text('A', xx+1, 100-hh+9);
+                  break;
+                case str('T'):  
+                  fill(133,122,185);
+                  rect(xx, yy, ww, hh);
+                  fill(0);
+                  textSize(ww);
+                  text('T', xx+1, 100-hh+9);
+                  break;
+                 case str('C'):  
+                  fill(236,95,75);
+                  rect(xx, yy, ww, hh);
+                  fill(0);
+                  textSize(ww);
+                  text('C', xx+1, 100-hh+9);
+                  break;
+                case str('G'):  
+                  fill(122,197,131);
+                  rect(xx, yy, ww, hh);
+                  fill(0);
+                  textSize(ww);
+                  text('G', xx+1, 100-hh+9);
+                  break;
+                default:
+                  fill(0, 0, 0);
+                  rect(xx,yy, ww, hh);
+                  fill(0);
+                  textSize(ww);
+                  text(c, xx+1, 100-hh+9);
+                  
+                  break;    
+              }
+
+            }
+            else
+            {
+              fill(100, 0, 0);
+              rect(xx, yy, ww, hh);
+              //draw a tri with transparent
+            }
+          }
+        }
+          
+      }
+
+  }
+      
+}

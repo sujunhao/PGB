@@ -29,7 +29,7 @@ var maxV = [];            //max number of the value array
 //var theRsId, theEsId, theVsId; //-
 // var theRs = new Array(); //-
 // var theEs = new Array(); //-
-// var theVs = new Array(); //-
+//var theVs = new Array(); //-
 
 var theAdd = false;  //if processing want js to update
 
@@ -227,6 +227,34 @@ function getReadyStateHandler() {
                                     case 'Mapq':
                                         rd.theRs[j].m = parseInt(node.innerHTML);
                                         break;
+                                    case 'V':
+                                        var vd= new VsNode();
+                                        vd.id = rd.theRs[j].id;
+                                        
+                                        for (var m = 0; m < 1; m++) {
+                                            vd.theVs[m] = new VS();
+                                            vd.theVs[m].id = node.getAttribute('id');
+                                            vd.theVs[m].y = node.getAttribute('Y');
+                                            for (var n = 0; n < node.childNodes.length; n++) {
+                                                var noded = node.childNodes[n];
+                                                switch (noded.nodeName) {
+                                                    case 'F':
+                                                        vd.theVs[m].f = parseInt(noded.innerHTML);
+                                                        break;
+                                                    case 'T':
+                                                        vd.theVs[m].t = parseInt(noded.innerHTML);
+                                                        break;
+                                                    case 'B':
+                                                        vd.theVs[m].b = (noded.innerHTML);
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
+                                            }
+                                        }
+                                        theVsL.push(vd);
+                                        break;
+
 
                                     default:
                                         break;
@@ -330,42 +358,42 @@ function getReadyStateHandler() {
             theLong = theEnd - theStart;
             notTraceChange = false;
 
-            var pattern = /></g;
-            var pattern1 = /<\//;
-            var pattern2 = />/;
-            var pattern3 = /<.*?>/;
-            var pattern4 = /<.*?\/>/;
-            var pattern5 = /<\/.*?>/;
-            var pattern6 = /<.*?>.*<\/.*?>/;
-            var divvText = req.responseText.replace(pattern, ">\n<");
-            var divvTexts = divvText.split("\n");
-            var tabtemp = 0;
-            for (var divvidx = 0; divvidx < divvTexts.length; divvidx++) {
-                if (pattern6.test(divvTexts[divvidx])) {
-                    for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
-                        divvTexts[divvidx] = "\t" + divvTexts[divvidx];
-                    }
-                    divvTexts[divvidx] = divvTexts[divvidx].replace(pattern1, "\t<\/");
-                    divvTexts[divvidx] = divvTexts[divvidx].replace(pattern2, ">\t");
-                } else if (pattern4.test(divvTexts[divvidx])) {
-                    for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
-                        divvTexts[divvidx] = "\t" + divvTexts[divvidx];
-                    }
-                } else if (pattern5.test(divvTexts[divvidx])) {
-                    tabtemp = tabtemp - 1;
-                    for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
-                        divvTexts[divvidx] = "\t" + divvTexts[divvidx];
-                    }
-                } else if (pattern3.test(divvTexts[divvidx])) {
-                    for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
-                        divvTexts[divvidx] = "\t" + divvTexts[divvidx];
-                    }
-                    tabtemp = tabtemp + 1;
-                }
-            }
-            divvText = divvTexts.join("\n");
-            TT = divvText;
-            document.getElementById("divv").innerHTML = "<xmp>" + divvText + "</xmp>";
+            // var pattern = /></g;
+            // var pattern1 = /<\//;
+            // var pattern2 = />/;
+            // var pattern3 = /<.*?>/;
+            // var pattern4 = /<.*?\/>/;
+            // var pattern5 = /<\/.*?>/;
+            // var pattern6 = /<.*?>.*<\/.*?>/;
+            // var divvText = req.responseText.replace(pattern, ">\n<");
+            // var divvTexts = divvText.split("\n");
+            // var tabtemp = 0;
+            // for (var divvidx = 0; divvidx < divvTexts.length; divvidx++) {
+            //     if (pattern6.test(divvTexts[divvidx])) {
+            //         for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
+            //             divvTexts[divvidx] = "\t" + divvTexts[divvidx];
+            //         }
+            //         divvTexts[divvidx] = divvTexts[divvidx].replace(pattern1, "\t<\/");
+            //         divvTexts[divvidx] = divvTexts[divvidx].replace(pattern2, ">\t");
+            //     } else if (pattern4.test(divvTexts[divvidx])) {
+            //         for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
+            //             divvTexts[divvidx] = "\t" + divvTexts[divvidx];
+            //         }
+            //     } else if (pattern5.test(divvTexts[divvidx])) {
+            //         tabtemp = tabtemp - 1;
+            //         for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
+            //             divvTexts[divvidx] = "\t" + divvTexts[divvidx];
+            //         }
+            //     } else if (pattern3.test(divvTexts[divvidx])) {
+            //         for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
+            //             divvTexts[divvidx] = "\t" + divvTexts[divvidx];
+            //         }
+            //         tabtemp = tabtemp + 1;
+            //     }
+            // }
+            // divvText = divvTexts.join("\n");
+            // TT = divvText;
+            // document.getElementById("divv").innerHTML = "<xmp>" + divvText + "</xmp>";
             //
             //alert("asdasd"+divvText)
         } else {

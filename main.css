@@ -2,7 +2,18 @@ ul li{
     display: inline;
 }
 
+h1{
+	text-align: center;
+}
 
+ul{
+	position: relative;
+  	left: 150px;
+}
+#can{
+	position: relative;
+  	left: 100px;
+}
 xmp {
     white-space:pre-wrap;word-wrap:break-word;word-break:break-all;
 }
