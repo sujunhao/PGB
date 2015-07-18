@@ -1,7 +1,6 @@
-float _PIXLEN;//each ATCG pixels length
-int _show; //show how many seq
 int _MINLEN=100; //the least _show number
-int _i = 0; //first node index in require sequence
+
+
 
 float px;  //pre mouseX
 boolean haveNoPx=true, rangechange=false;
@@ -15,19 +14,89 @@ void setup()
   size(1100, 1200);
   background(#FFEBCD);
   smooth();
-
+  frameRate(100);
   _show =1000;
   _PIXLEN = 1;
+  notTraceChange = true;
 }
+
+class Ball
+{
+  float x, y, r;
+  float speedX, speedY;
+  color c;
+  boolean flag = true;
+  Ball(float tx, float ty, float tr, color tc)
+  {
+    x = tx; 
+    y = ty;
+    r = tr/2;
+    c = tc;
+    speedX = constrain(random(-0.1, 10+0.1)-5, -5, 5);
+    speedY = constrain(random(-0.1, 10+0.1)-5, -5, 5);
+  }
+  
+  void show()
+  {
+    noStroke();
+    fill(c);
+    ellipse(x, y, r*2, r*2);
+  }
+  
+  void run()
+  {
+    show();
+    if (!flag) return;
+    if ((speedX >= 0 && x+r > width) || (speedX < 0 && x-r < 0))
+    {
+        speedX = -speedX;
+    }
+    if ((speedY >=0 && y+r > height) || (speedY <0 && y-r < 0))
+    {
+        speedY = -speedY;
+    }
+    x += speedX;
+    y += speedY;
+   }
+   
+   void checkC(Ball b)
+   {
+     if (dist(x, y, b.x, b.y) < (r+b.r))
+       flag = false;
+   }
+  
+}
+
+
+Ball b1 = new Ball(50, 50, constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
+Ball b2 = new Ball(240, 300, constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
+Ball b3 = new Ball(400, 400,constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
 
 
 void draw()
 {
+  if (notTraceChange)
+  {
+
+    background(255);
+    b1.checkC(b2);
+    b1.checkC(b3);
+    b2.checkC(b1);
+    b2.checkC(b3);
+    b3.checkC(b1);
+    b3.checkC(b2);
+    b1.run();
+    b2.run();
+    b3.run();
+    return;
+  }
+  wantupdata();
+  
   background(255);
     
-  wantupdata();
 
 
+  _PIXLEN = 1000.0/_show;
   drawPart1();  
   nextY=100;      //value part draw form y=100
   for (int i=0; i<theValueL.length; i++)
@@ -54,32 +123,35 @@ void draw()
   fill(#ffffe5);
   rect(0, nextY, width, height-nextY);
   //showInfo();
+
+
+
 }
 
 void wantupdata()    //test _i and update data and _i
 {
   if (!haveNoPx) return;
-  if (rangechange || theStart+_i+_show>theEnd)                              //if (_i<0 || (_i>theLong-_show)) //if _i out of range
+  if (rangechange || theStart+_i+_show-1>theEnd)                              //if (_i<0 || (_i>theLong-_show)) //if _i out of range
   {
       //println(_i);
       notTraceChange=true;
       param2 = (int)((int)param2 + (int)_i);
-      param3 = (int)((int)param2 + (int)_i + _show);
+      param3 = (int)((int)param2 + (int)_i + _show - 1);
 
       if (param2<1 && param3>theLength) //if query out of the chromosome length set border to 1 to theLength
       {
-        _show += ((param2-1)+(theLength-param3));
+        _show=theLength;
         param2=1;
         param3=theLength;
       }
       else if (param3>theLength)
       {
-        _show += (theLength-param3);
+        _show = theLength-(theStart+_i)+1;
         param3=theLength;
       }
       else if (param2<1)
       {
-        _show += (param2-1);
+        _show=theStart+_i+_show;
         param2=1;
       }
       _i=0;
@@ -184,7 +256,7 @@ void drawTrace()
 
 void drawVsTrace()
 {
-  if (theVsL.length==0) return;
+  //if (theVsL.length==0) return;
   //set iscolor hh, ww, len , rr, ll
   int f, t, rr, hh=10, len, yy;
   float ww, ll;
@@ -212,8 +284,8 @@ void drawVsTrace()
             xx = _PIXLEN*(f-ll)+100;
             if ((mouseX>=xx && mouseX<=xx+ww) && (mouseY>=yy) && (mouseY<=yy+hh))
             {
-              String s = "f :" + f + " t: "+ " trackId: "+theVsL[z].id + " Id: " + theVsL[z].theVs[i].id + " Y: " +
-              theVsL[z].theVs[i].y + " B: " + 
+              String s = "f :" + f + " | t: "+ t+ " | trackId: "+theVsL[z].id + " | Id: " + theVsL[z].theVs[i].id + " | Y: " +
+              theVsL[z].theVs[i].y + " | B: " + 
               theVsL[z].theVs[i].b;
 
               var x = f, y = yy, w = 100, h = hh;
@@ -391,7 +463,7 @@ void drawPart1()
           strokeWeight(0.5);
           line(x, y-10, x, y);
           fill(0);
-          textSize(10);
+          textSize(6);
           text(_i+theStart+((x-100)/10), x+3, y);
         }
         
@@ -488,14 +560,14 @@ void drawPart1()
 
           line(x, y-10-t, x, y-t);
           fill(0);
-          textSize(10);
+          textSize(6);
           text((int)(_i+theStart+((x-100)/k)), x+3, y-t);
         }
         if ((int)x%50==0 && (int)x%100!=0)
         {
           line(x, y+k+t, x, y+10+k+t);
           fill(0);
-          textSize(10);
+          textSize(6);
           text((int)(_i+theStart+((x-100)/k)), x+3, y+k+t+10);
         }
         
@@ -517,14 +589,15 @@ void drawPart1()
 
           line(x, y-10, x, y);
           fill(0);
-          textSize(10);
+          textSize(0.5);
+          textLeading(0.5);
           text((int)(_i+theStart+((x-100)/_PIXLEN)), x+3, y);
         }
         if ((int)x%50==0 && (int)x%100!=0)
         {
           line(x, y, x, y+10);
           fill(0);
-          textSize(10);
+          textSize(6);
           text((int)(_i+theStart+((x-100)/_PIXLEN)), x+3, y+10);
         }
         x += 50;
@@ -534,6 +607,12 @@ void drawPart1()
   textSize(15);
   fill(50);
   text(theChromosome, 5, width/10/2);
+
+  if (_show>1000)
+  {
+    text(theStart, 105, 15);
+    text(theEnd, 1020, 15);
+  }
 }
 
 void drawPart2(int j)
@@ -547,13 +626,16 @@ void drawPart2(int j)
   line(100, nextY+50, 1100, nextY+50);
 
   float x=100, y=50+nextY, k=_PIXLEN, t, __show=_show, _k=k;
+  int __i=_i;
   if (_show>1500)
   {
     __show = 1500;
-    _k=(width-100)/1500;
+    _k=1000.0/1500;
+    __i=0;
   }
   for (int i=0; i<__show; i++)
   {
+
       float vv = theValueL[j].s[_i+i];
       float t = map(abs(vv), 0, maxV[j], 0, 50);
       noStroke();

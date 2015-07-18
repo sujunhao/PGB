@@ -34,7 +34,15 @@ var maxV = [];            //max number of the value array
 var theAdd = false;  //if processing want js to update
 
 
+var _i, _show;
+
 var notTraceChange=false;  //if the Add is true ,let processing no trace change
+
+
+var _PIXLEN=0.1;//each ATCG pixels length
+var _show=1000; //show how many seq
+ //the least _show number
+var _i = 0; //first node index in require sequence
 
 
 //theRsL is a array include all Rs node, and each have id and it's RS array
@@ -120,6 +128,8 @@ update = function() {
         param1 = document.getElementById("p1").value;
         param2 = document.getElementById("p2").value;
         param3 = document.getElementById("p3").value;
+        _show = param3-param2+1;
+        _PIXLEN = 1000/_show;
     }
 
     var querry = "update";
@@ -355,46 +365,46 @@ function getReadyStateHandler() {
                 }
             }
 
-            theLong = theEnd - theStart;
+            theLong = theEnd - theStart + 1;
             notTraceChange = false;
 
-            // var pattern = /></g;
-            // var pattern1 = /<\//;
-            // var pattern2 = />/;
-            // var pattern3 = /<.*?>/;
-            // var pattern4 = /<.*?\/>/;
-            // var pattern5 = /<\/.*?>/;
-            // var pattern6 = /<.*?>.*<\/.*?>/;
-            // var divvText = req.responseText.replace(pattern, ">\n<");
-            // var divvTexts = divvText.split("\n");
-            // var tabtemp = 0;
-            // for (var divvidx = 0; divvidx < divvTexts.length; divvidx++) {
-            //     if (pattern6.test(divvTexts[divvidx])) {
-            //         for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
-            //             divvTexts[divvidx] = "\t" + divvTexts[divvidx];
-            //         }
-            //         divvTexts[divvidx] = divvTexts[divvidx].replace(pattern1, "\t<\/");
-            //         divvTexts[divvidx] = divvTexts[divvidx].replace(pattern2, ">\t");
-            //     } else if (pattern4.test(divvTexts[divvidx])) {
-            //         for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
-            //             divvTexts[divvidx] = "\t" + divvTexts[divvidx];
-            //         }
-            //     } else if (pattern5.test(divvTexts[divvidx])) {
-            //         tabtemp = tabtemp - 1;
-            //         for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
-            //             divvTexts[divvidx] = "\t" + divvTexts[divvidx];
-            //         }
-            //     } else if (pattern3.test(divvTexts[divvidx])) {
-            //         for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
-            //             divvTexts[divvidx] = "\t" + divvTexts[divvidx];
-            //         }
-            //         tabtemp = tabtemp + 1;
-            //     }
-            // }
-            // divvText = divvTexts.join("\n");
-            // TT = divvText;
-            // document.getElementById("divv").innerHTML = "<xmp>" + divvText + "</xmp>";
-            //
+            var pattern = /></g;
+            var pattern1 = /<\//;
+            var pattern2 = />/;
+            var pattern3 = /<.*?>/;
+            var pattern4 = /<.*?\/>/;
+            var pattern5 = /<\/.*?>/;
+            var pattern6 = /<.*?>.*<\/.*?>/;
+            var divvText = req.responseText.replace(pattern, ">\n<");
+            var divvTexts = divvText.split("\n");
+            var tabtemp = 0;
+            for (var divvidx = 0; divvidx < divvTexts.length; divvidx++) {
+                if (pattern6.test(divvTexts[divvidx])) {
+                    for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
+                        divvTexts[divvidx] = "\t" + divvTexts[divvidx];
+                    }
+                    divvTexts[divvidx] = divvTexts[divvidx].replace(pattern1, "\t<\/");
+                    divvTexts[divvidx] = divvTexts[divvidx].replace(pattern2, ">\t");
+                } else if (pattern4.test(divvTexts[divvidx])) {
+                    for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
+                        divvTexts[divvidx] = "\t" + divvTexts[divvidx];
+                    }
+                } else if (pattern5.test(divvTexts[divvidx])) {
+                    tabtemp = tabtemp - 1;
+                    for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
+                        divvTexts[divvidx] = "\t" + divvTexts[divvidx];
+                    }
+                } else if (pattern3.test(divvTexts[divvidx])) {
+                    for (var tabnum = 0; tabnum < tabtemp; tabnum++) {
+                        divvTexts[divvidx] = "\t" + divvTexts[divvidx];
+                    }
+                    tabtemp = tabtemp + 1;
+                }
+            }
+            divvText = divvTexts.join("\n");
+            TT = divvText;
+            document.getElementById("divv").innerHTML = "<xmp>" + divvText + "</xmp>";
+            
             //alert("asdasd"+divvText)
         } else {
             document.getElementById("divv").innerHTML = req.responseText;
