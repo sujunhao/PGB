@@ -1,7 +1,4 @@
 int _MINLEN=100; //the least _show number
-
-
-
 float px;  //pre mouseX
 boolean haveNoPx=true, rangechange=false;
 
@@ -9,16 +6,7 @@ int nextY = 0;
 
 color [] col = {color(78,238,148), color(112,202,238), color(158,202,225), color(107,174,214), color(49,130,189), color(252,187,161), color(251,106,74), color(165,15,21)};
 
-void setup()
-{
-  size(1100, 1200);
-  background(#FFEBCD);
-  smooth();
- // frameRate(100);
-  _show =1000;
-  _PIXLEN = 1;
-  notTraceChange = true;
-}
+PFont f;
 
 class Ball
 {
@@ -26,6 +14,15 @@ class Ball
   float speedX, speedY;
   color c;
   boolean flag = true;
+  Ball()
+  {
+      x = random(50, width-50);
+      y = random(50, 300-50);
+      r =  constrain(random(19.5, 40.5), 20, 40)/2;
+      c =  color(random(255), random(255), random(255));
+      speedX = constrain(random(-0.1, 10+0.1)-5, -5, 5);
+      speedY = constrain(random(-0.1, 10+0.1)-5, -5, 5);
+  }
   Ball(float tx, float ty, float tr, color tc)
   {
     x = tx; 
@@ -50,10 +47,12 @@ class Ball
     if ((speedX >= 0 && x+r > width) || (speedX < 0 && x-r < 0))
     {
         speedX = -speedX;
+        c =  color(random(255), random(255), random(255));
     }
     if ((speedY >=0 && y+r > 400) || (speedY <0 && y-r < 0))
     {
         speedY = -speedY;
+        c =  color(random(255), random(255), random(255));
     }
     x += speedX;
     y += speedY;
@@ -68,38 +67,50 @@ class Ball
 }
 
 
-Ball b1 = new Ball(50, 50, constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
-Ball b2 = new Ball(240, 300, constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
-Ball b3 = new Ball(400, 400,constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
-Ball b4 = new Ball(400, 400,constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
-Ball b5 = new Ball(400, 400,constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
+Ball[] bb;
+int ballnum=2;
 
+
+void setup()
+{
+  size(1100, 1200);
+  background(#FFEBCD);
+  f = loadFont("Monospaced.plain-20.vlw");
+  textFont(f, 10);
+  smooth();
+  frameRate(100);
+  _show =1000;
+  _PIXLEN = 1;
+  notTraceChange = true;
+  bb = new Ball[10];
+  for (int i=0; i<ballnum; i++)
+  { 
+    bb[i] = new Ball();
+  }
+}
 
 
 void draw()
 {
-  if (notTraceChange)
+  if (notTraceChange)//draw the loading wait animation
   {
 
     background(255);
-    b1.checkC(b2);
-    b1.checkC(b3);
-    b2.checkC(b1);
-    b2.checkC(b3);
-    b3.checkC(b1);
-    b3.checkC(b2);
-    b1.run();
-    b2.run();
-    b3.run();
-    b4.run();
-    b5.run();
+    for (int i=0; i<ballnum; i++)
+    {
+      bb[i].run();
+    }
+    textSize(50);
+    text("data are loading", 350, 200);
     return;
   }
-  wantupdata();
+  if (keyPressed)
+  {
+    keyP();
+  }
+  wantupdata()
+  //if (wantupdata()) return;
   
-  //background(255);
-    
-
 
   _PIXLEN = 1000.0/_show;
   drawPart1();  
@@ -128,14 +139,12 @@ void draw()
   fill(#ffffe5);
   rect(0, nextY, width, height-nextY);
   //showInfo();
-
-
-
 }
 
-void wantupdata()    //test _i and update data and _i
+//test _i and update data and _i
+boolean wantupdata()    
 {
-  if (!haveNoPx) return;
+  if (!haveNoPx) return false;
   if (rangechange || theStart+_i+_show-1>theEnd)                              //if (_i<0 || (_i>theLong-_show)) //if _i out of range
   {
       //println(_i);
@@ -163,7 +172,9 @@ void wantupdata()    //test _i and update data and _i
       theAdd=true;
       rangechange = false;
       update();
+      return true;
   }
+  return false;
 }
 
 void showInfo()
@@ -179,7 +190,10 @@ void showInfo()
 //the move line
 void drawTrace()
 { 
-  for (int i=0; i<theTrap.length; i++)
+
+  if (notTraceChange) return;
+
+  for (int i=0; i<theTrap.length; i++) //loof the Trap list in order to check whether mouse on it 
   {
     if ((mouseX>=theTrap[i].r[0] && mouseX<=theTrap[i].r[0]+theTrap[i].r[2])&&(mouseY>=theTrap[i].r[1] && mouseY<=theTrap[i].r[1]+theTrap[i].r[3]))
     {
@@ -203,7 +217,8 @@ void drawTrace()
       text(theTrap[i].s, mouseX+k2+k1+5, y-3);
     }
   }
-  if (notTraceChange) return;
+
+  
   int len = theValueL.length;
   if ((100<mouseX && mouseX<1100) && (mouseY>0) && (mouseY<100+100*len))
   {
@@ -259,7 +274,9 @@ void drawTrace()
   }
 }
 
-void drawVsTrace()
+
+//draw the variant info
+void drawVsTrace()  
 {
   //if (theVsL.length==0) return;
   //set iscolor hh, ww, len , rr, ll
@@ -321,7 +338,9 @@ void drawVsTrace()
       
 }
 
-void keyPressed()
+
+//if key press change _i and _show
+void keyP()
 {
   if (notTraceChange) return;
   //define keypresses up down right left
@@ -372,7 +391,9 @@ void mouseWheel(MouseEvent event)
   _i+=e;
   rangechange = true;
 }
-//_i, _show, _PIXLEN
+
+
+//use _i, _show, _PIXLEN
 void drawPart1()
 {
   stroke(0);
@@ -396,35 +417,35 @@ void drawPart1()
               rect(x, y, k, k);
               fill(0);
               textSize(k);
-              text('A', x, y+9);
+              text('A', x+2, y+9);
               break;
             case str('T'):  
               fill(133,122,185);
               rect(x, y, k, k);
               fill(0);
               textSize(k);
-              text('T', x, y+9);
+              text('T', x+2, y+9);
               break;
              case str('C'):  
               fill(236,95,75);
               rect(x, y, k, k);
               fill(0);
               textSize(k);
-              text('C', x, y+9);
+              text('C', x+2, y+9);
               break;
             case str('G'):  
               fill(122,197,131);
               rect(x, y, k, k);
               fill(0);
               textSize(k);
-              text('G', x, y+9);
+              text('G', x+2, y+9);
               break;
             default:
               fill(0,0,0);
               rect(x, y, k, k);
               fill(0);
               textSize(k);
-              text('N', x, y+9);
+              text('N', x+2, y+9);
               
               break;              
         }
@@ -457,28 +478,28 @@ void drawPart1()
               rect(x, y, k, k);
               fill(0);
               textSize(k);
-              text('A', x+1, y+9);
+              text('A', x+2, y+9);
               break;
             case 1:  
               fill(133,122,185);
               rect(x, y, k, k);
               fill(0);
               textSize(k);
-              text('T', x+1, y+9);
+              text('T', x+2, y+9);
               break;
              case 2:  
               fill(236,95,75);
               rect(x, y, k, k);
               fill(0);
               textSize(k);
-              text('C', x, y+9);
+              text('C',x+2, y+9);
               break;
             case 3:  
               fill(122,197,131);
               rect(x, y, k, k);
               fill(0);
               textSize(k);
-              text('G', x, y+9);
+              text('G',x+2, y+9);
               break;
             default:
               fill(0, 0, 0);
@@ -497,6 +518,8 @@ void drawPart1()
     t=10-k;
     x=100;
     y=100/2-5;
+
+
     for (int i=0; i<_show; i++)
     {
         noStroke();
@@ -540,7 +563,7 @@ void drawPart1()
           line(x, y+k+t, x, y+10+k+t);
           fill(0);
           textSize(6);
-          text((int)(_i+theStart+((x-100)/k)), x+3, y+k+t+10);
+          text(str(_i+theStart+((x-100)/k)), x+3, y+k+t+10);
         }
         
         
@@ -710,10 +733,10 @@ void drawPart3(int z)
 
   float wy=(level.length)*15, ly = nextY, k=15;
   if (wy<100) wy=100;
-  if (level.length>=150/15)
+  if (level.length>=300/15)
   {
-    k = 150/level.length;
-    wy = 150;
+    k = 300/level.length;
+    wy = 300;
   }
   float o = max((k-10)/2, k/5);
   stroke(0);        //set the content box
@@ -880,10 +903,10 @@ void drawPart4(int z)
 
   float wy=(level.length)*15, ly = nextY, k=15;
   if (wy<100) wy=100;
-  if (level.length>30)
+  if (level.length>(height-ly)/15)
   {
-    k = 450/level.length;
-    wy = 450;
+    k = (height-ly)/level.length;
+    wy = height-ly;
   }
   float o = max((k-10)/2, k/5);
   stroke(0);        //set the content box
@@ -898,7 +921,9 @@ void drawPart4(int z)
   textAlign(RIGHT)
   fill(100);
   text(theRsL[z].id, 5, ly+wy/2, 80, 40);
-  
+
+  noStroke();
+  strokeWeight(0);
   for(int m=0; m<level.length; m++)
   {
     for (int n=0; n<level[m].length; n++)
@@ -919,7 +944,7 @@ void drawPart4(int z)
       rect(tf, ly+k*ii+o, tw, k-2*o);
       theTrap[i].r[1]=ly+k*ii+o;
       theTrap[i].r[3]= k-2*o;
-      if (abs(tw)-2*o<=0 || wy==450) continue;
+      if (abs(tw)-2*o<=0 || k<=10) continue;
       drawDir(mark, tf, tf+tw, ly+(ii+1)*k-o, k, o);
 
     }
