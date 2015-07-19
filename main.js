@@ -105,6 +105,7 @@ var theTrap = [];
 function Trap(){
     this.r = [];
     this.s = "";
+    this.S = [];
 }
 
 var level = [];
@@ -128,7 +129,28 @@ update = function() {
         param1 = document.getElementById("p1").value;
         param2 = document.getElementById("p2").value;
         param3 = document.getElementById("p3").value;
+        if (param2<1) param2=1;
+        if (param3>theLength) param3=theLength;
         _show = param3-param2+1;
+        if (_show<100){
+            if (param2<=100)
+            {
+                param2=1;
+                param3=200;
+                _show=200;
+            }
+            else if (param3>=theLength-100+1)
+            {
+                param2=theLength-200+1;
+                param3=theLength;
+                _show = 200;
+            }
+            else{
+                param3 = param2+200-1;
+                _show = 200;
+            }
+
+        }
         _PIXLEN = 1000/_show;
     }
 

@@ -7,14 +7,14 @@ boolean haveNoPx=true, rangechange=false;
 
 int nextY = 0;
 
-color [] col = {color(78,238,148), color(112,202,238)};
+color [] col = {color(78,238,148), color(112,202,238), color(158,202,225), color(107,174,214), color(49,130,189), color(252,187,161), color(251,106,74), color(165,15,21)};
 
 void setup()
 {
   size(1100, 1200);
   background(#FFEBCD);
   smooth();
-  frameRate(100);
+ // frameRate(100);
   _show =1000;
   _PIXLEN = 1;
   notTraceChange = true;
@@ -97,7 +97,7 @@ void draw()
   }
   wantupdata();
   
-  background(255);
+  //background(255);
     
 
 
@@ -334,52 +334,19 @@ void keyPressed()
         _i = _i-1;
     } else if(keyCode ==UP){
       float k = _PIXLEN;
-      switch(_show)
-      {
-          case 100:
-            _show = 200;
-             break;
-           case 200:
-            _show = 500;
-             break;
-           case 500:
-            _show = 1000;
-             break;
-           default:
-            if (_show>=1000)
-            {
-              _show *= 2;
-            }
-            break;         
-      }
+     _show *= 2;
       _PIXLEN=1000/_show;
       _i = (int)(_i+(mouseX-100)*(1.0/k-1.0/_PIXLEN));
     }
     else if (keyCode==DOWN){
       float k = _PIXLEN;
-      switch(_show)
+      if (_show<=200)
       {
-          case 1000:
-            _show = 500;
-             break;
-           case 500:
-            _show = 200;
-             break;
-           case 200:
-            _show = 100;
-             break;
-           default:
-            if (_show>1000 && _show<=2000)
-            {
-              _show = 1000;
-            }
-            else if(_show>2000)
-            {
-              _show /= 2;
-            }
-
-            break;         
+        _show=100;
       }
+      else{
+      _show /= 2;       
+      }  
       _PIXLEN = 1000.0/_show;
       _i = (int)(_i+(mouseX-100)*(1.0/k-1.0/_PIXLEN));
     }
@@ -476,7 +443,7 @@ void drawPart1()
         x +=k;
     }
   }
-  else if (theLong<=1500 && _show<=1000)
+  else if (theLong<=1500 && _show<=1500)
   {
     float x=100, y=0, k=10, t=10-k;
     int ii = _i;
@@ -613,7 +580,7 @@ void drawPart1()
   fill(50);
   text(theChromosome, 5, width/10/2);
 
-  if (_show>1000)
+  if (_show>1500)
   {
     text(theStart, 105, 15);
     text(theEnd, 1020, 15);
@@ -645,11 +612,11 @@ void drawPart2(int j)
       float t = map(abs(vv), 0, maxV[j], 0, 50);
       noStroke();
       if (t<50/3)
-      fill(158,202,225);
+      fill(col[(j%2)*3+2]);
       else if(t<50/3*2)
-      fill(107,174,214);
+      fill(col[(j%2)*3+3]);
       else
-      fill(49,130,189);
+      fill(col[(j%2)*3+4]);
       if (vv>=0)
       {
         rect(x, y-t, _k, t); 
@@ -743,10 +710,10 @@ void drawPart3(int z)
 
   float wy=(level.length)*15, ly = nextY, k=15;
   if (wy<100) wy=100;
-  if (level.length>30)
+  if (level.length>=150/15)
   {
-    k = 450/level.length;
-    wy = 450;
+    k = 150/level.length;
+    wy = 150;
   }
   float o = max((k-10)/2, k/5);
   stroke(0);        //set the content box
@@ -791,12 +758,14 @@ void drawPart3(int z)
       theTrap[i+l].r[1]=ly+k*ii+o;
       theTrap[i+l].r[3]= k-2*o;
 
-      //stroke(25);
-      //strokeWeight(0.5);
+      stroke(25);
+      strokeWeight(0.5);
+      
+      
       for (var j=0; j<theEsL[z].theEs[i].S.length; j++)
       {
-        f = theEsL[z].theEs[i].S[j].f;
-        t = theEsL[z].theEs[i].S[j].t;
+        int f = theEsL[z].theEs[i].S[j].f;
+        int t = theEsL[z].theEs[i].S[j].t;
         if (t <= theStart+_i) continue;
         if (f >= theStart+_i+_show) continue;
 
@@ -821,8 +790,26 @@ void drawPart3(int z)
                 drawDir(mark, 100+abs(f-theStart-_i+1)*_PIXLEN, 100+abs(t-theStart-_i)*_PIXLEN, ly+(ii+1)*k-o, k, o);
                 break;
             default:
+                fill(255, 255);
                 break;
+
         }
+      }
+
+
+      if (theEsL[z].theEs[i].S.length==0) //when no return type inside a gene show as a X sequence 
+      {
+        int f = theEsL[z].theEs[i].f;
+        int t = theEsL[z].theEs[i].t;
+        if (t <= theStart+_i) continue;
+        if (f >= theStart+_i+_show) continue;
+
+        if (f<theStart+_i) f = theStart+_i;
+        if (t>=theStart+_i+_show) t=theStart+_i+_show-1;
+        fill(#ADFF2F);
+        rect(100+abs(f-theStart-_i+1)*_PIXLEN, ly+k*ii+o, abs(t-f+1)*_PIXLEN, k-2*o);
+        if (abs(t-f)*_PIXLEN>k-2*o)
+        drawDir(mark, 100+abs(f-theStart-_i+1)*_PIXLEN, 100+abs(t-theStart-_i)*_PIXLEN, ly+(ii+1)*k-o, k, o);
       }
     }
   }
