@@ -51,7 +51,7 @@ class Ball
     {
         speedX = -speedX;
     }
-    if ((speedY >=0 && y+r > height) || (speedY <0 && y-r < 0))
+    if ((speedY >=0 && y+r > 400) || (speedY <0 && y-r < 0))
     {
         speedY = -speedY;
     }
@@ -71,6 +71,9 @@ class Ball
 Ball b1 = new Ball(50, 50, constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
 Ball b2 = new Ball(240, 300, constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
 Ball b3 = new Ball(400, 400,constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
+Ball b4 = new Ball(400, 400,constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
+Ball b5 = new Ball(400, 400,constrain(random(19.5, 40.5), 20, 40), color(random(255), random(255), random(255)));
+
 
 
 void draw()
@@ -88,6 +91,8 @@ void draw()
     b1.run();
     b2.run();
     b3.run();
+    b4.run();
+    b5.run();
     return;
   }
   wantupdata();
@@ -691,9 +696,9 @@ void drawPart3(int z)
     if (f >= theStart+_i+_show) continue;
       
     if (f<theStart+_i) f = theStart+_i;
-    if (t>theStart+_i+_show) t=theStart+_i+_show;
+    if (t>=theStart+_i+_show) t=theStart+_i+_show-1;
       
-    float tf = 100+abs(f-theStart-_i)*_PIXLEN, tw = abs(t-f+1)*_PIXLEN;
+    float tf = 100+abs(f-theStart-_i+1)*_PIXLEN, tw = abs(t-f+1)*_PIXLEN;
 
     var w = new LevelNode();
     w.c=theEsL[z].theEs[i].s;
@@ -776,8 +781,6 @@ void drawPart3(int z)
     {
       int i=level[m][n].n;
 
-
-      int tf = theEsL[z].theEs[i].f, tw = theEsL[z].theEs[i].t;
       ii = m;
 
       String mark = "<";
@@ -788,31 +791,34 @@ void drawPart3(int z)
       theTrap[i+l].r[1]=ly+k*ii+o;
       theTrap[i+l].r[3]= k-2*o;
 
-      stroke(25);
-      strokeWeight(0.5);
+      //stroke(25);
+      //strokeWeight(0.5);
       for (var j=0; j<theEsL[z].theEs[i].S.length; j++)
       {
         f = theEsL[z].theEs[i].S[j].f;
         t = theEsL[z].theEs[i].S[j].t;
+        if (t <= theStart+_i) continue;
+        if (f >= theStart+_i+_show) continue;
+
         if (f<theStart+_i) f = theStart+_i;
-        if (t>theStart+_i+_show) t=theStart+_i+_show;
+        if (t>=theStart+_i+_show) t=theStart+_i+_show-1;
         switch(theEsL[z].theEs[i].S[j].y) //XLD 012
         {
             case 0:
                 fill(#ADFF2F);
-                rect(100+abs(f-theStart-_i)*_PIXLEN, ly+k*ii+o, abs(t-f+1)*_PIXLEN, k-2*o);
+                rect(100+abs(f-theStart-_i+1)*_PIXLEN, ly+k*ii+o, abs(t-f+1)*_PIXLEN, k-2*o);
                 if (abs(t-f)*_PIXLEN>k-2*o)
-                drawDir(mark, 100+abs(f-theStart-_i)*_PIXLEN, 100+abs(t-theStart-_i)*_PIXLEN, ly+(ii+1)*k-o, k, o);
+                drawDir(mark, 100+abs(f-theStart-_i+1)*_PIXLEN, 100+abs(t-theStart-_i)*_PIXLEN, ly+(ii+1)*k-o, k, o);
                 break;
             case 1:
                 fill(#778899);
-                rect(100+abs(f-theStart-_i)*_PIXLEN, ly+k*ii+o, abs(t-f+1)*_PIXLEN, k-2*o);
+                rect(100+abs(f-theStart-_i+1)*_PIXLEN, ly+k*ii+o, abs(t-f+1)*_PIXLEN, k-2*o);
                 break;
             case 2:
                 fill(#FFA500);
-                rect(100+abs(f-theStart-_i)*_PIXLEN, ly+k*ii+o, abs(t-f+1)*_PIXLEN, k-2*o);
+                rect(100+abs(f-theStart-_i+1)*_PIXLEN, ly+k*ii+o, abs(t-f+1)*_PIXLEN, k-2*o);
                 if (abs(t-f)*_PIXLEN>k-2*o)
-                drawDir(mark, 100+abs(f-theStart-_i)*_PIXLEN, 100+abs(t-theStart-_i)*_PIXLEN, ly+(ii+1)*k-o, k, o);
+                drawDir(mark, 100+abs(f-theStart-_i+1)*_PIXLEN, 100+abs(t-theStart-_i)*_PIXLEN, ly+(ii+1)*k-o, k, o);
                 break;
             default:
                 break;
@@ -838,9 +844,9 @@ void drawPart4(int z)
         if (f >= theStart+_i+_show) continue;
         
         if (f<theStart+_i) f = theStart+_i;
-        if (t>theStart+_i+_show) t=theStart+_i+_show;
+        if (t>=theStart+_i+_show) t=theStart+_i+_show-1;
         
-        float tf = 100+abs(f-theStart-_i)*_PIXLEN, tw = abs(t-f+1)*_PIXLEN;
+        float tf = 100+abs(f-theStart-_i+1)*_PIXLEN, tw = abs(t-f+1)*_PIXLEN;
 
         var w = new LevelNode();
         w.c=theRsL[z].theRs[i].s;
@@ -911,7 +917,7 @@ void drawPart4(int z)
     for (int n=0; n<level[m].length; n++)
     {
       int i=level[m][n].n+l;
-      int tf = theTrap[i].r[0], tw = theTrap[i].r[2];
+      float tf = theTrap[i].r[0], tw = theTrap[i].r[2];
       ii = m;
 
       String mark = "<";
