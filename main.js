@@ -124,6 +124,8 @@ update = function() {
     if (theAdd) {
         document.getElementById("p2").value = param2;
         document.getElementById("p3").value = param3;
+
+          
         theAdd = false;
     } else {
         param1 = document.getElementById("p1").value;
@@ -132,22 +134,20 @@ update = function() {
         if (param2<1) param2=1;
         if (param3>theLength) param3=theLength;
         _show = param3-param2+1;
-        if (_show<100){
-            if (param2<=100)
+        if (_show<1500){
+            if (param2<=1500)
             {
-                param2=1;
-                param3=200;
-                _show=200;
+                param3=param2+1500-1;
             }
-            else if (param3>=theLength-100+1)
+            else if (param3>=theLength-1500+1)
             {
-                param2=theLength-200+1;
-                param3=theLength;
-                _show = 200;
+                _i = param2-(param3-1500+1);
+                param2=param3-1500+1;
             }
             else{
-                param3 = param2+200-1;
-                _show = 200;
+                _i=(1500-_show)/2;
+                param2 -= _i;
+                param3 = param2+1500-1;
             }
 
         }

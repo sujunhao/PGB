@@ -148,6 +148,7 @@ boolean wantupdata()
   if (rangechange || theStart+_i+_show-1>theEnd)                              //if (_i<0 || (_i>theLong-_show)) //if _i out of range
   {
       //println(_i);
+      if (_i>=0 && theStart+_i+_show-1<=theEnd && (theLong<=1500)) return false;
       notTraceChange=true;
       param2 = (int)((int)param2 + (int)_i);
       param3 = (int)((int)param2 + (int)_i + _show - 1);
