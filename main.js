@@ -120,6 +120,17 @@ function LevelNode(){
     this.n = 1;
 }
 
+function IsNum(s) //check if a string is a positive number
+{
+    if(s!=null){
+        var r,re;
+        re = /\d*/i; //\d表示数字,*表示匹配多个数字
+        r = s.match(re);
+        return (r==s)?true:false;
+    }
+    return false;
+}
+
 update = function() {
     if (theAdd) {
         document.getElementById("p2").value = param2;
@@ -131,9 +142,14 @@ update = function() {
         param1 = document.getElementById("p1").value;
         param2 = document.getElementById("p2").value;
         param3 = document.getElementById("p3").value;
+        if (!IsNum(param2) || !IsNum(param3) || param2>theLength || param3<1 || param3-param2<0)
+        {
+            alert('input error');
+            return;
+        }
         if (param2<1) param2=1;
         if (param3>theLength) param3=theLength;
-        _show = param3-param2+1;
+        _show = parseInt(param3-param2+1);
         if (_show<1500){
             if (param2<=1500)
             {
@@ -145,7 +161,7 @@ update = function() {
                 param2=param3-1500+1;
             }
             else{
-                _i=(1500-_show)/2;
+                _i=parseInt((1500-_show)/2);
                 param2 -= _i;
                 param3 = param2+1500-1;
             }
@@ -186,6 +202,9 @@ function getReadyStateHandler() {
 
             for (var i = 0; i < data.length; i++) {
                 switch (data[i].nodeName) {
+                    case "Error":
+                        alert(data[i].innerHTML);
+                        return;
                     case "Chromosome":
                         theChromosome = data[i].innerHTML;
                         break;
@@ -430,7 +449,7 @@ function getReadyStateHandler() {
             //alert("asdasd"+divvText)
         } else {
             document.getElementById("divv").innerHTML = req.responseText;
-            alert("HTTP error: " + req.status);
+            alert("query error \n HTTP error: " + req.status);
         }
     }
 }
