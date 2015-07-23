@@ -1,4 +1,5 @@
 int _MINLEN=100; //the least _show number
+
 float px;  //pre mouseX
 boolean haveNoPx=true, rangechange=false;
 
@@ -631,7 +632,6 @@ void drawPart2(int j)
   }
   for (int i=0; i<__show; i++)
   {
-
       float vv = theValueL[j].s[_i+i];
       float t = map(abs(vv), 0, maxV[j], 0, 50);
       noStroke();
